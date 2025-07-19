@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Cloud, Shield, TrendingUp, Zap, Award, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Cloud, Shield, TrendingUp, Zap, Award, CheckCircle2, Smartphone, Download } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const features = [
@@ -40,7 +40,9 @@ const benefits = [
   "Automated compliance reporting",
   "Disaster recovery and backup",
   "Elastic scalability for peak loads",
-  "Advanced threat detection"
+  "Advanced threat detection",
+  "Mobile app for field operations",
+  "Offline data synchronization"
 ]
 
 export default function Home() {
@@ -181,22 +183,81 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Mobile App Section */}
+      <section className="bg-gradient-utility rounded-2xl p-8 text-white">
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Smartphone className="h-6 w-6" />
+              <Badge className="bg-white/20 text-white border-white/30">Mobile Ready</Badge>
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Grid Vision Mobile App</h2>
+            <p className="mb-6 opacity-90">
+              Access your utility grid operations dashboard anywhere with our native mobile applications. 
+              Perfect for field crews, remote monitoring, and emergency response.
+            </p>
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0" />
+                <span>Real-time grid status notifications</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0" />
+                <span>Offline data access and synchronization</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0" />
+                <span>GPS-enabled asset management</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-white flex-shrink-0" />
+                <span>Secure field crew authentication</span>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <Button className="bg-white text-utility-blue hover:bg-white/90">
+                <Download className="mr-2 h-4 w-4" />
+                iOS App
+              </Button>
+              <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                <Download className="mr-2 h-4 w-4" />
+                Android App
+              </Button>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+              <Smartphone className="h-24 w-24 mx-auto mb-4 text-white" />
+              <h3 className="text-xl font-bold mb-2">Available Platforms</h3>
+              <div className="flex gap-2 justify-center mb-4">
+                <Badge className="bg-white/20 text-white border-white/30">iOS 14+</Badge>
+                <Badge className="bg-white/20 text-white border-white/30">Android 8+</Badge>
+              </div>
+              <p className="text-sm opacity-90">
+                Powered by Capacitor for native performance
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Call to Action */}
       <section className="text-center py-12 bg-gradient-card rounded-2xl">
-        <h2 className="text-3xl font-bold mb-4">Ready to Modernize Your Grid?</h2>
+        <h2 className="text-3xl font-bold mb-4">Ready to Connect Your Utility Grid?</h2>
         <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Explore our comprehensive documentation, view live dashboards, and discover how 
-          AWS-based GIS infrastructure can transform your utility operations.
+          Start monitoring your electrical grid operations with our AWS-based platform. 
+          Connect any utility grid and access real-time analytics, predictive maintenance, and compliance tools.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg">
-            <Link to="/documentation">
-              View Documentation
+            <Link to="/dashboard">
+              Launch Dashboard <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link to="/compliance">
-              Compliance Details
+            <Link to="/documentation">
+              View Documentation
             </Link>
           </Button>
         </div>
