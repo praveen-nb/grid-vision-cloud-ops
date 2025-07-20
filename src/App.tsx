@@ -4,12 +4,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "@/components/ui/navigation";
+import { AuthGuard } from "@/components/AuthGuard";
 import Home from "./pages/Home";
 import Architecture from "./pages/Architecture";
 import Dashboard from "./pages/Dashboard";
 import Documentation from "./pages/Documentation";
 import Deliverables from "./pages/Deliverables";
 import Compliance from "./pages/Compliance";
+import Auth from "./pages/Auth";
+import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,12 +36,14 @@ const App = () => (
           </header>
           <main className="max-w-7xl mx-auto px-6 py-8">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/architecture" element={<Architecture />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/documentation" element={<Documentation />} />
-              <Route path="/deliverables" element={<Deliverables />} />
-              <Route path="/compliance" element={<Compliance />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/architecture" element={<AuthGuard><Architecture /></AuthGuard>} />
+              <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+              <Route path="/documentation" element={<AuthGuard><Documentation /></AuthGuard>} />
+              <Route path="/deliverables" element={<AuthGuard><Deliverables /></AuthGuard>} />
+              <Route path="/compliance" element={<AuthGuard><Compliance /></AuthGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

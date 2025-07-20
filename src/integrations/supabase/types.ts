@@ -14,7 +14,160 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      grid_alerts: {
+        Row: {
+          alert_type: string
+          connection_id: string
+          created_at: string
+          id: string
+          message: string
+          resolved: boolean | null
+          resolved_at: string | null
+          severity: string
+        }
+        Insert: {
+          alert_type: string
+          connection_id: string
+          created_at?: string
+          id?: string
+          message: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          severity: string
+        }
+        Update: {
+          alert_type?: string
+          connection_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grid_alerts_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grid_connections: {
+        Row: {
+          api_credentials_encrypted: string | null
+          created_at: string
+          endpoint: string
+          frequency: number | null
+          id: string
+          last_update: string | null
+          location: string
+          name: string
+          protocol: string
+          status: string
+          type: string
+          updated_at: string
+          user_id: string
+          voltage: number | null
+        }
+        Insert: {
+          api_credentials_encrypted?: string | null
+          created_at?: string
+          endpoint: string
+          frequency?: number | null
+          id?: string
+          last_update?: string | null
+          location: string
+          name: string
+          protocol: string
+          status?: string
+          type: string
+          updated_at?: string
+          user_id: string
+          voltage?: number | null
+        }
+        Update: {
+          api_credentials_encrypted?: string | null
+          created_at?: string
+          endpoint?: string
+          frequency?: number | null
+          id?: string
+          last_update?: string | null
+          location?: string
+          name?: string
+          protocol?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          voltage?: number | null
+        }
+        Relationships: []
+      }
+      grid_metrics: {
+        Row: {
+          connection_id: string
+          id: string
+          metric_type: string
+          timestamp: string
+          unit: string
+          value: number
+        }
+        Insert: {
+          connection_id: string
+          id?: string
+          metric_type: string
+          timestamp?: string
+          unit: string
+          value: number
+        }
+        Update: {
+          connection_id?: string
+          id?: string
+          metric_type?: string
+          timestamp?: string
+          unit?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grid_metrics_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
