@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_analytics: {
+        Row: {
+          actual_outcome: Json | null
+          confidence_score: number
+          connection_id: string
+          created_at: string
+          id: string
+          is_anomaly: boolean | null
+          model_type: string
+          prediction_data: Json
+          prediction_type: string
+          severity_level: string | null
+        }
+        Insert: {
+          actual_outcome?: Json | null
+          confidence_score: number
+          connection_id: string
+          created_at?: string
+          id?: string
+          is_anomaly?: boolean | null
+          model_type: string
+          prediction_data: Json
+          prediction_type: string
+          severity_level?: string | null
+        }
+        Update: {
+          actual_outcome?: Json | null
+          confidence_score?: number
+          connection_id?: string
+          created_at?: string
+          id?: string
+          is_anomaly?: boolean | null
+          model_type?: string
+          prediction_data?: Json
+          prediction_type?: string
+          severity_level?: string | null
+        }
+        Relationships: []
+      }
+      gis_assets: {
+        Row: {
+          asset_id: string
+          asset_type: string
+          created_at: string
+          geometry: Json
+          id: string
+          last_inspection: string | null
+          properties: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_id: string
+          asset_type: string
+          created_at?: string
+          geometry: Json
+          id?: string
+          last_inspection?: string | null
+          properties: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_id?: string
+          asset_type?: string
+          created_at?: string
+          geometry?: Json
+          id?: string
+          last_inspection?: string | null
+          properties?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       grid_alerts: {
         Row: {
           alert_type: string
@@ -141,6 +219,78 @@ export type Database = {
           },
         ]
       }
+      iot_devices: {
+        Row: {
+          created_at: string
+          device_id: string
+          device_type: string
+          id: string
+          last_heartbeat: string | null
+          location: Json
+          metadata: Json | null
+          name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          device_type: string
+          id?: string
+          last_heartbeat?: string | null
+          location: Json
+          metadata?: Json | null
+          name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          device_type?: string
+          id?: string
+          last_heartbeat?: string | null
+          location?: Json
+          metadata?: Json | null
+          name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kinesis_metrics: {
+        Row: {
+          bytes_per_second: number
+          id: string
+          iterator_age_ms: number
+          records_per_second: number
+          shard_id: string
+          stream_name: string
+          timestamp: string
+        }
+        Insert: {
+          bytes_per_second?: number
+          id?: string
+          iterator_age_ms?: number
+          records_per_second?: number
+          shard_id: string
+          stream_name: string
+          timestamp?: string
+        }
+        Update: {
+          bytes_per_second?: number
+          id?: string
+          iterator_age_ms?: number
+          records_per_second?: number
+          shard_id?: string
+          stream_name?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -165,6 +315,42 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      scada_operations: {
+        Row: {
+          command_data: Json
+          connection_id: string
+          created_at: string
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          operation_type: string
+          status: string
+          target_device: string
+        }
+        Insert: {
+          command_data: Json
+          connection_id: string
+          created_at?: string
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          operation_type: string
+          status?: string
+          target_device: string
+        }
+        Update: {
+          command_data?: Json
+          connection_id?: string
+          created_at?: string
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          operation_type?: string
+          status?: string
+          target_device?: string
         }
         Relationships: []
       }

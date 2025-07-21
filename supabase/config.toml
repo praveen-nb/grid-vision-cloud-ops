@@ -1,1 +1,10 @@
 project_id = "melusgrbbjgybhqkasoi"
+
+[functions.aws-iot-simulator]
+verify_jwt = false
+
+[functions.sagemaker-ai-analytics]
+verify_jwt = false
+
+[functions.scada-operations]
+verify_jwt = true
