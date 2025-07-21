@@ -1,4 +1,4 @@
-# Grid Vision Cloud Ops 🔌⚡
+# Cognitive Grid Cloud Ops
 
 A comprehensive AWS-based GIS Infrastructure Documentation and Dashboard application for electrical utilities. Monitor and manage utility grid operations with real-time analytics, AI-powered insights, and NERC-CIP compliant security.
 
