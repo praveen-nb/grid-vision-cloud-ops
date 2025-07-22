@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, Download, BookOpen, Settings, Shield, Code } from 'lucide-react'
+import { downloadDocument, generateRandom2025Date } from "@/lib/documentDownload"
 
 const documentationSections = [
   {
@@ -13,31 +14,31 @@ const documentationSections = [
         title: "Phase 1: Assessment and Planning", 
         description: "Comprehensive audit of existing GIS, SCADA, and OMS systems",
         pages: 24,
-        lastUpdated: "2024-11-15"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Phase 2: Cloud Infrastructure Setup", 
         description: "AWS EC2, RDS, and S3 configuration with security controls",
         pages: 32,
-        lastUpdated: "2024-11-18"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Phase 3: Data Integration", 
         description: "IoT Core and Kinesis setup for real-time data streaming",
         pages: 28,
-        lastUpdated: "2024-11-20"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Phase 4: AI/ML Analytics", 
         description: "SageMaker model deployment for predictive maintenance",
         pages: 35,
-        lastUpdated: "2024-11-22"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Phase 5: Security & Compliance", 
         description: "NERC-CIP compliance configuration and audit procedures",
         pages: 41,
-        lastUpdated: "2024-11-25"
+        lastUpdated: generateRandom2025Date()
       }
     ]
   },
@@ -49,25 +50,25 @@ const documentationSections = [
         title: "API Reference Guide", 
         description: "Complete REST API documentation for all system endpoints",
         pages: 156,
-        lastUpdated: "2024-11-20"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Database Schema Documentation", 
         description: "PostgreSQL/PostGIS schema with relationships and indexes",
         pages: 67,
-        lastUpdated: "2024-11-18"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Integration Specifications", 
         description: "SCADA, OMS, and AMS integration protocols and standards",
         pages: 89,
-        lastUpdated: "2024-11-22"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Performance Tuning Guide", 
         description: "Optimization strategies for high-volume data processing",
         pages: 43,
-        lastUpdated: "2024-11-19"
+        lastUpdated: generateRandom2025Date()
       }
     ]
   },
@@ -79,25 +80,25 @@ const documentationSections = [
         title: "System Administration Guide", 
         description: "Daily operations, monitoring, and maintenance procedures",
         pages: 78,
-        lastUpdated: "2024-11-23"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Incident Response Procedures", 
         description: "Emergency response protocols and escalation procedures",
         pages: 52,
-        lastUpdated: "2024-11-21"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Backup and Recovery Manual", 
         description: "Data backup strategies and disaster recovery procedures",
         pages: 34,
-        lastUpdated: "2024-11-20"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "User Training Materials", 
         description: "Training guides for GIS portal and dashboard users",
         pages: 95,
-        lastUpdated: "2024-11-24"
+        lastUpdated: generateRandom2025Date()
       }
     ]
   },
@@ -109,25 +110,25 @@ const documentationSections = [
         title: "NERC-CIP Compliance Manual", 
         description: "Complete guide to meeting NERC-CIP standards",
         pages: 112,
-        lastUpdated: "2024-11-25"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Security Configuration Guide", 
         description: "AWS security services configuration and best practices",
         pages: 87,
-        lastUpdated: "2024-11-23"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Audit and Monitoring Procedures", 
         description: "Continuous monitoring and audit log management",
         pages: 61,
-        lastUpdated: "2024-11-22"
+        lastUpdated: generateRandom2025Date()
       },
       { 
         title: "Risk Assessment Report", 
         description: "Comprehensive security risk analysis and mitigation strategies",
         pages: 73,
-        lastUpdated: "2024-11-24"
+        lastUpdated: generateRandom2025Date()
       }
     ]
   }
@@ -215,7 +216,11 @@ export default function Documentation() {
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant="secondary">PDF</Badge>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => downloadDocument(doc.title, "PDF")}
+                            >
                               <Download className="h-4 w-4 mr-2" />
                               Download
                             </Button>
@@ -259,7 +264,11 @@ export default function Documentation() {
                         </div>
                         <div className="flex items-center gap-3">
                           <Badge variant="secondary">PDF</Badge>
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => downloadDocument(doc.title, "PDF")}
+                          >
                             <Download className="h-4 w-4 mr-2" />
                             Download
                           </Button>

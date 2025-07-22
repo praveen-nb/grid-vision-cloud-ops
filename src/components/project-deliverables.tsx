@@ -3,76 +3,77 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Download, FileText, Image, Database, Shield, BarChart3, MapPin, Settings } from 'lucide-react'
+import { downloadDocument, generateRandom2025Date } from "@/lib/documentDownload"
 
 const deliverables = [
   {
     category: "System Design Documents",
     icon: FileText,
     items: [
-      { name: "AWS-Based GIS Architecture Specification", author: "System Architect", type: "PDF", size: "2.4 MB", status: "Complete" },
-      { name: "Technical Requirements Document", author: "Lead Engineer", type: "DOCX", size: "1.8 MB", status: "Complete" },
-      { name: "Database Schema Design", author: "Database Designer", type: "PDF", size: "1.2 MB", status: "Complete" },
-      { name: "API Documentation", author: "Software Developer", type: "HTML", size: "3.6 MB", status: "Complete" }
+      { name: "AWS-Based GIS Architecture Specification", author: "System Architect", type: "PDF", size: "2.4 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Technical Requirements Document", author: "Lead Engineer", type: "DOCX", size: "1.8 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Database Schema Design", author: "Database Designer", type: "PDF", size: "1.2 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "API Documentation", author: "Software Developer", type: "HTML", size: "3.6 MB", status: "Complete", date: generateRandom2025Date() }
     ]
   },
   {
     category: "Architecture Diagrams",
     icon: MapPin,
     items: [
-      { name: "AWS Cloud Architecture Diagram", author: "Cloud Architect", type: "PNG", size: "4.2 MB", status: "Complete" },
-      { name: "Network Topology - RTAC Integration", author: "Network Engineer", type: "VSDX", size: "2.8 MB", status: "Complete" },
-      { name: "Data Flow Architecture", author: "Data Engineer", type: "PNG", size: "3.1 MB", status: "Complete" },
-      { name: "Security Architecture Layout", author: "Security Architect", type: "PDF", size: "2.9 MB", status: "Complete" }
+      { name: "AWS Cloud Architecture Diagram", author: "Cloud Architect", type: "PNG", size: "4.2 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Network Topology - RTAC Integration", author: "Network Engineer", type: "VSDX", size: "2.8 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Data Flow Architecture", author: "Data Engineer", type: "PNG", size: "3.1 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Security Architecture Layout", author: "Security Architect", type: "PDF", size: "2.9 MB", status: "Complete", date: generateRandom2025Date() }
     ]
   },
   {
     category: "Configuration & SOPs",
     icon: Settings,
     items: [
-      { name: "AWS IoT Core Configuration Manual", author: "IoT Specialist", type: "PDF", size: "1.9 MB", status: "Complete" },
-      { name: "Kinesis Data Stream Setup Guide", author: "Data Engineer", type: "DOCX", size: "1.5 MB", status: "Complete" },
-      { name: "Emergency Response Procedures", author: "Operations Manager", type: "PDF", size: "2.2 MB", status: "Complete" },
-      { name: "Maintenance Schedule & Protocols", author: "Maintenance Lead", type: "XLSX", size: "876 KB", status: "Complete" }
+      { name: "AWS IoT Core Configuration Manual", author: "IoT Specialist", type: "PDF", size: "1.9 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Kinesis Data Stream Setup Guide", author: "Data Engineer", type: "DOCX", size: "1.5 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Emergency Response Procedures", author: "Operations Manager", type: "PDF", size: "2.2 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Maintenance Schedule & Protocols", author: "Maintenance Lead", type: "XLSX", size: "876 KB", status: "Complete", date: generateRandom2025Date() }
     ]
   },
   {
     category: "Real-Time Data Evidence",
     icon: Database,
     items: [
-      { name: "Kinesis Stream Logs - Nov 2024", author: "System Monitor", type: "JSON", size: "15.2 MB", status: "Live" },
-      { name: "IoT Data Ingestion Screenshots", author: "Field Technician", type: "PNG", size: "8.7 MB", status: "Complete" },
-      { name: "SCADA Integration Logs", author: "SCADA Engineer", type: "LOG", size: "12.4 MB", status: "Live" },
-      { name: "Real-Time Analytics Dashboard", author: "Data Analyst", type: "HTML", size: "2.1 MB", status: "Live" }
+      { name: "Kinesis Stream Logs - Mar 2025", author: "System Monitor", type: "JSON", size: "15.2 MB", status: "Live", date: generateRandom2025Date() },
+      { name: "IoT Data Ingestion Screenshots", author: "Field Technician", type: "PNG", size: "8.7 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "SCADA Integration Logs", author: "SCADA Engineer", type: "LOG", size: "12.4 MB", status: "Live", date: generateRandom2025Date() },
+      { name: "Real-Time Analytics Dashboard", author: "Data Analyst", type: "HTML", size: "2.1 MB", status: "Live", date: generateRandom2025Date() }
     ]
   },
   {
     category: "GIS Dashboard Screenshots",
     icon: Image,
     items: [
-      { name: "Production GIS Dashboard - Main View", author: "GIS Analyst", type: "PNG", size: "6.3 MB", status: "Complete" },
-      { name: "ArcGIS Portal on AWS - Screenshots", author: "GIS Administrator", type: "ZIP", size: "24.8 MB", status: "Complete" },
-      { name: "Mobile GIS Application Views", author: "Mobile Developer", type: "PNG", size: "11.2 MB", status: "Complete" },
-      { name: "Field Crew Interface Screenshots", author: "Field Operations", type: "PNG", size: "7.9 MB", status: "Complete" }
+      { name: "Production GIS Dashboard - Main View", author: "GIS Analyst", type: "PNG", size: "6.3 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "ArcGIS Portal on AWS - Screenshots", author: "GIS Administrator", type: "ZIP", size: "24.8 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Mobile GIS Application Views", author: "Mobile Developer", type: "PNG", size: "11.2 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Field Crew Interface Screenshots", author: "Field Operations", type: "PNG", size: "7.9 MB", status: "Complete", date: generateRandom2025Date() }
     ]
   },
   {
     category: "Analytics & ML Reports",
     icon: BarChart3,
     items: [
-      { name: "SageMaker Predictive Maintenance Model", author: "ML Engineer", type: "IPYNB", size: "3.4 MB", status: "Complete" },
-      { name: "Asset Failure Prediction Reports", author: "Data Scientist", type: "PDF", size: "4.7 MB", status: "Complete" },
-      { name: "Redshift Analytics Performance", author: "Analytics Lead", type: "HTML", size: "2.8 MB", status: "Complete" },
-      { name: "Grid Optimization Insights", author: "Operations Analyst", type: "XLSX", size: "1.9 MB", status: "Complete" }
+      { name: "SageMaker Predictive Maintenance Model", author: "ML Engineer", type: "IPYNB", size: "3.4 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Asset Failure Prediction Reports", author: "Data Scientist", type: "PDF", size: "4.7 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Redshift Analytics Performance", author: "Analytics Lead", type: "HTML", size: "2.8 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Grid Optimization Insights", author: "Operations Analyst", type: "XLSX", size: "1.9 MB", status: "Complete", date: generateRandom2025Date() }
     ]
   },
   {
     category: "Compliance & Audit Logs",
     icon: Shield,
     items: [
-      { name: "NERC-CIP Compliance Configuration", author: "Compliance Officer", type: "PDF", size: "3.2 MB", status: "Complete" },
-      { name: "AWS CloudTrail Audit Logs", author: "Security Auditor", type: "JSON", size: "18.7 MB", status: "Live" },
-      { name: "Security Assessment Report", author: "Security Consultant", type: "PDF", size: "5.1 MB", status: "Complete" },
-      { name: "Regulatory Compliance Checklist", author: "Regulatory Manager", type: "XLSX", size: "1.3 MB", status: "Complete" }
+      { name: "NERC-CIP Compliance Configuration", author: "Compliance Officer", type: "PDF", size: "3.2 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "AWS CloudTrail Audit Logs", author: "Security Auditor", type: "JSON", size: "18.7 MB", status: "Live", date: generateRandom2025Date() },
+      { name: "Security Assessment Report", author: "Security Consultant", type: "PDF", size: "5.1 MB", status: "Complete", date: generateRandom2025Date() },
+      { name: "Regulatory Compliance Checklist", author: "Regulatory Manager", type: "XLSX", size: "1.3 MB", status: "Complete", date: generateRandom2025Date() }
     ]
   }
 ]
@@ -118,14 +119,18 @@ export function ProjectDeliverables() {
                           <div className="flex-1">
                             <h4 className="font-medium">{item.name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Created by {item.author} • {item.type} • {item.size}
+                              Created by {item.author} • {item.type} • {item.size} • {item.date}
                             </p>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant={item.status === 'Live' ? 'default' : 'secondary'}>
                               {item.status}
                             </Badge>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => downloadDocument(item.name, item.type)}
+                            >
                               <Download className="h-4 w-4 mr-2" />
                               Download
                             </Button>
@@ -163,12 +168,16 @@ export function ProjectDeliverables() {
                           <div className="flex-1">
                             <h4 className="font-medium">{item.name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Created by {item.author} • {item.type} • {item.size}
+                              Created by {item.author} • {item.type} • {item.size} • {item.date}
                             </p>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant="secondary">{item.status}</Badge>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => downloadDocument(item.name, item.type)}
+                            >
                               <Download className="h-4 w-4 mr-2" />
                               Download
                             </Button>
@@ -206,14 +215,18 @@ export function ProjectDeliverables() {
                           <div className="flex-1">
                             <h4 className="font-medium">{item.name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Created by {item.author} • {item.type} • {item.size}
+                              Created by {item.author} • {item.type} • {item.size} • {item.date}
                             </p>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant={item.status === 'Live' ? 'default' : 'secondary'}>
                               {item.status}
                             </Badge>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => downloadDocument(item.name, item.type)}
+                            >
                               <Download className="h-4 w-4 mr-2" />
                               Download
                             </Button>
@@ -249,14 +262,18 @@ export function ProjectDeliverables() {
                           <div className="flex-1">
                             <h4 className="font-medium">{item.name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Created by {item.author} • {item.type} • {item.size}
+                              Created by {item.author} • {item.type} • {item.size} • {item.date}
                             </p>
                           </div>
                           <div className="flex items-center gap-3">
                             <Badge variant={item.status === 'Live' ? 'default' : 'secondary'}>
                               {item.status}
                             </Badge>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => downloadDocument(item.name, item.type)}
+                            >
                               <Download className="h-4 w-4 mr-2" />
                               Download
                             </Button>
