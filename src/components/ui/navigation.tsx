@@ -10,6 +10,7 @@ const navigationItems = [
   { href: "/", label: "Overview" },
   { href: "/architecture", label: "Architecture" },
   { href: "/dashboard", label: "Real-time Dashboard" },
+  { href: "/live-monitoring", label: "Live Monitoring" },
   { href: "/documentation", label: "Documentation" },
   { href: "/deliverables", label: "Project Deliverables" },
   { href: "/compliance", label: "Compliance" }
