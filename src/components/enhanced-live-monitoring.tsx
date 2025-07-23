@@ -26,6 +26,7 @@ import { useSecurityMonitoring } from '@/hooks/useSecurityMonitoring';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { EnhancedMonitoringRecommendations } from './enhanced-monitoring-recommendations';
 import { SubstationManagement } from './substation-management';
+import { SystemControlPanel } from './system-control-panel';
 
 interface MetricCardProps {
   title: string;
@@ -285,8 +286,9 @@ export function EnhancedLiveMonitoring() {
 
       {/* Main Dashboard */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">System Overview</TabsTrigger>
+          <TabsTrigger value="control">System Control</TabsTrigger>
           <TabsTrigger value="substations">Substation Management</TabsTrigger>
           <TabsTrigger value="monitoring">Live Monitoring</TabsTrigger>
           <TabsTrigger value="analytics">AI Analytics</TabsTrigger>
@@ -401,6 +403,10 @@ export function EnhancedLiveMonitoring() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="control">
+          <SystemControlPanel />
         </TabsContent>
 
         <TabsContent value="substations">

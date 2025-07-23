@@ -20,3 +20,15 @@ verify_jwt = false
 
 [functions.mobile-field-sync]
 verify_jwt = true
+
+[functions.realtime-data-simulator]
+verify_jwt = false
+
+[functions.ai-analytics-processor]
+verify_jwt = false
+
+[functions.system-scheduler]
+verify_jwt = false
+
+[functions.alert-management-system]
+verify_jwt = false
