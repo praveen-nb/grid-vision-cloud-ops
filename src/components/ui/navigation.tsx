@@ -13,6 +13,7 @@ const navigationItems = [
   { href: "/live-monitoring", label: "Live Monitoring", shortLabel: "Live" },
   { href: "/aws-infrastructure", label: "AWS Infrastructure", shortLabel: "AWS" },
   { href: "/phase3-advanced", label: "Phase 3: Advanced ML", shortLabel: "ML" },
+  { href: "/phase4-enterprise", label: "Phase 4: Enterprise", shortLabel: "ENT" },
   { href: "/sagemaker", label: "SageMaker", shortLabel: "SM" },
   { href: "/documentation", label: "Documentation", shortLabel: "Docs" },
   { href: "/deliverables", label: "Project Deliverables", shortLabel: "Files" },
