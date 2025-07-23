@@ -11,6 +11,7 @@ const navigationItems = [
   { href: "/architecture", label: "Architecture", shortLabel: "Arch" },
   { href: "/dashboard", label: "Real-time Dashboard", shortLabel: "Dash" },
   { href: "/live-monitoring", label: "Live Monitoring", shortLabel: "Live" },
+  { href: "/aws-infrastructure", label: "AWS Infrastructure", shortLabel: "AWS" },
   { href: "/documentation", label: "Documentation", shortLabel: "Docs" },
   { href: "/deliverables", label: "Project Deliverables", shortLabel: "Files" },
   { href: "/compliance", label: "Compliance", shortLabel: "Comp" }

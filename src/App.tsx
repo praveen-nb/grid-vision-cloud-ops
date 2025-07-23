@@ -12,6 +12,7 @@ import Documentation from "./pages/Documentation";
 import Deliverables from "./pages/Deliverables";
 import Compliance from "./pages/Compliance";
 import LiveMonitoring from "./pages/LiveMonitoring";
+import AWSInfrastructure from "./pages/AWSInfrastructure";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/deliverables" element={<AuthGuard><Deliverables /></AuthGuard>} />
               <Route path="/compliance" element={<AuthGuard><Compliance /></AuthGuard>} />
               <Route path="/live-monitoring" element={<AuthGuard><LiveMonitoring /></AuthGuard>} />
+              <Route path="/aws-infrastructure" element={<AuthGuard><AWSInfrastructure /></AuthGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
