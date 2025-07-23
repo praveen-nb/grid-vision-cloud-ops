@@ -53,15 +53,339 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_records: {
+        Row: {
+          compliance_status: string | null
+          connection_id: string
+          corrective_actions: Json | null
+          created_at: string
+          findings: Json | null
+          id: string
+          last_audit_date: string | null
+          next_audit_date: string | null
+          regulation_type: string
+          responsible_person: string | null
+          updated_at: string
+        }
+        Insert: {
+          compliance_status?: string | null
+          connection_id: string
+          corrective_actions?: Json | null
+          created_at?: string
+          findings?: Json | null
+          id?: string
+          last_audit_date?: string | null
+          next_audit_date?: string | null
+          regulation_type: string
+          responsible_person?: string | null
+          updated_at?: string
+        }
+        Update: {
+          compliance_status?: string | null
+          connection_id?: string
+          corrective_actions?: Json | null
+          created_at?: string
+          findings?: Json | null
+          id?: string
+          last_audit_date?: string | null
+          next_audit_date?: string | null
+          regulation_type?: string
+          responsible_person?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_records_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copilot_queries: {
+        Row: {
+          connection_id: string | null
+          created_at: string
+          executed_successfully: boolean | null
+          execution_time_ms: number | null
+          generated_sql: string | null
+          id: string
+          natural_query: string
+          results_summary: Json | null
+          user_id: string
+        }
+        Insert: {
+          connection_id?: string | null
+          created_at?: string
+          executed_successfully?: boolean | null
+          execution_time_ms?: number | null
+          generated_sql?: string | null
+          id?: string
+          natural_query: string
+          results_summary?: Json | null
+          user_id: string
+        }
+        Update: {
+          connection_id?: string | null
+          created_at?: string
+          executed_successfully?: boolean | null
+          execution_time_ms?: number | null
+          generated_sql?: string | null
+          id?: string
+          natural_query?: string
+          results_summary?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copilot_queries_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_incidents: {
+        Row: {
+          actual_resolution: string | null
+          affected_customers: number | null
+          communication_log: Json | null
+          connection_id: string
+          created_at: string
+          customer_info: Json
+          description: string
+          estimated_resolution: string | null
+          id: string
+          incident_type: string
+          location: Json | null
+          severity: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_resolution?: string | null
+          affected_customers?: number | null
+          communication_log?: Json | null
+          connection_id: string
+          created_at?: string
+          customer_info: Json
+          description: string
+          estimated_resolution?: string | null
+          id?: string
+          incident_type: string
+          location?: Json | null
+          severity?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_resolution?: string | null
+          affected_customers?: number | null
+          communication_log?: Json | null
+          connection_id?: string
+          created_at?: string
+          customer_info?: Json
+          description?: string
+          estimated_resolution?: string | null
+          id?: string
+          incident_type?: string
+          location?: Json | null
+          severity?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_incidents_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      environmental_data: {
+        Row: {
+          connection_id: string
+          coordinates: Json
+          created_at: string
+          data_type: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          severity_level: string | null
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          connection_id: string
+          coordinates: Json
+          created_at?: string
+          data_type: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          severity_level?: string | null
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          connection_id?: string
+          coordinates?: Json
+          created_at?: string
+          data_type?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          severity_level?: string | null
+          source?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "environmental_data_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      etl_jobs: {
+        Row: {
+          connection_id: string | null
+          created_at: string
+          error_log: Json | null
+          id: string
+          job_name: string
+          progress_percentage: number | null
+          records_processed: number | null
+          source_config: Json
+          source_type: string
+          status: string | null
+          target_format: string
+          transformation_rules: Json
+          updated_at: string
+        }
+        Insert: {
+          connection_id?: string | null
+          created_at?: string
+          error_log?: Json | null
+          id?: string
+          job_name: string
+          progress_percentage?: number | null
+          records_processed?: number | null
+          source_config: Json
+          source_type: string
+          status?: string | null
+          target_format: string
+          transformation_rules: Json
+          updated_at?: string
+        }
+        Update: {
+          connection_id?: string | null
+          created_at?: string
+          error_log?: Json | null
+          id?: string
+          job_name?: string
+          progress_percentage?: number | null
+          records_processed?: number | null
+          source_config?: Json
+          source_type?: string
+          status?: string | null
+          target_format?: string
+          transformation_rules?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "etl_jobs_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      field_operations: {
+        Row: {
+          actual_start: string | null
+          completed_at: string | null
+          connection_id: string
+          created_at: string
+          description: string | null
+          findings: Json | null
+          id: string
+          location: Json
+          offline_data: Json | null
+          operation_type: string
+          photos: Json | null
+          priority: string | null
+          scheduled_start: string | null
+          status: string | null
+          technician_id: string
+          updated_at: string
+        }
+        Insert: {
+          actual_start?: string | null
+          completed_at?: string | null
+          connection_id: string
+          created_at?: string
+          description?: string | null
+          findings?: Json | null
+          id?: string
+          location: Json
+          offline_data?: Json | null
+          operation_type: string
+          photos?: Json | null
+          priority?: string | null
+          scheduled_start?: string | null
+          status?: string | null
+          technician_id: string
+          updated_at?: string
+        }
+        Update: {
+          actual_start?: string | null
+          completed_at?: string | null
+          connection_id?: string
+          created_at?: string
+          description?: string | null
+          findings?: Json | null
+          id?: string
+          location?: Json
+          offline_data?: Json | null
+          operation_type?: string
+          photos?: Json | null
+          priority?: string | null
+          scheduled_start?: string | null
+          status?: string | null
+          technician_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "field_operations_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gis_assets: {
         Row: {
           asset_id: string
           asset_type: string
+          connection_id: string | null
           created_at: string
           geometry: Json
           id: string
           last_inspection: string | null
+          maintenance_schedule: Json | null
           properties: Json
+          risk_level: string | null
           status: string
           updated_at: string
           user_id: string
@@ -69,11 +393,14 @@ export type Database = {
         Insert: {
           asset_id: string
           asset_type: string
+          connection_id?: string | null
           created_at?: string
           geometry: Json
           id?: string
           last_inspection?: string | null
+          maintenance_schedule?: Json | null
           properties: Json
+          risk_level?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -81,16 +408,27 @@ export type Database = {
         Update: {
           asset_id?: string
           asset_type?: string
+          connection_id?: string | null
           created_at?: string
           geometry?: Json
           id?: string
           last_inspection?: string | null
+          maintenance_schedule?: Json | null
           properties?: Json
+          risk_level?: string | null
           status?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gis_assets_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       grid_alerts: {
         Row: {
@@ -219,6 +557,53 @@ export type Database = {
           },
         ]
       }
+      grid_topology: {
+        Row: {
+          connection_id: string
+          connections: Json | null
+          coordinates: Json | null
+          created_at: string
+          id: string
+          node_id: string
+          node_type: string
+          operational_status: string | null
+          properties: Json
+          updated_at: string
+        }
+        Insert: {
+          connection_id: string
+          connections?: Json | null
+          coordinates?: Json | null
+          created_at?: string
+          id?: string
+          node_id: string
+          node_type: string
+          operational_status?: string | null
+          properties: Json
+          updated_at?: string
+        }
+        Update: {
+          connection_id?: string
+          connections?: Json | null
+          coordinates?: Json | null
+          created_at?: string
+          id?: string
+          node_id?: string
+          node_type?: string
+          operational_status?: string | null
+          properties?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grid_topology_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       iot_devices: {
         Row: {
           created_at: string
@@ -291,6 +676,53 @@ export type Database = {
         }
         Relationships: []
       }
+      predictive_analytics: {
+        Row: {
+          asset_id: string
+          confidence_score: number | null
+          connection_id: string
+          created_at: string
+          id: string
+          input_features: Json
+          model_version: string
+          predicted_date: string | null
+          prediction_type: string
+          probability: number | null
+        }
+        Insert: {
+          asset_id: string
+          confidence_score?: number | null
+          connection_id: string
+          created_at?: string
+          id?: string
+          input_features: Json
+          model_version: string
+          predicted_date?: string | null
+          prediction_type: string
+          probability?: number | null
+        }
+        Update: {
+          asset_id?: string
+          confidence_score?: number | null
+          connection_id?: string
+          created_at?: string
+          id?: string
+          input_features?: Json
+          model_version?: string
+          predicted_date?: string | null
+          prediction_type?: string
+          probability?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictive_analytics_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -354,15 +786,97 @@ export type Database = {
         }
         Relationships: []
       }
+      security_events: {
+        Row: {
+          connection_id: string | null
+          created_at: string
+          event_details: Json
+          event_type: string
+          id: string
+          response_actions: Json | null
+          severity: string | null
+          source_ip: unknown | null
+          status: string | null
+          target_system: string | null
+          updated_at: string
+        }
+        Insert: {
+          connection_id?: string | null
+          created_at?: string
+          event_details: Json
+          event_type: string
+          id?: string
+          response_actions?: Json | null
+          severity?: string | null
+          source_ip?: unknown | null
+          status?: string | null
+          target_system?: string | null
+          updated_at?: string
+        }
+        Update: {
+          connection_id?: string | null
+          created_at?: string
+          event_details?: Json
+          event_type?: string
+          id?: string
+          response_actions?: Json | null
+          severity?: string | null
+          source_ip?: unknown | null
+          status?: string | null
+          target_system?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_events_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "grid_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "admin"
+        | "operator"
+        | "field_technician"
+        | "analyst"
+        | "compliance_officer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -489,6 +1003,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "admin",
+        "operator",
+        "field_technician",
+        "analyst",
+        "compliance_officer",
+      ],
+    },
   },
 } as const
