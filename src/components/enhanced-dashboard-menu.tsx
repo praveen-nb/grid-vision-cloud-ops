@@ -86,16 +86,17 @@ export function EnhancedDashboardMenu() {
 
   const createNewConnection = async () => {
     try {
-      const newConnection = {
-        name: `Grid Connection ${connections.length + 1}`,
-        type: 'Distribution',
-        location: 'New Location',
-        endpoint: 'http://localhost:8080',
-        protocol: 'HTTP',
-        status: 'disconnected',
-        voltage: 12000,
-        frequency: 60
-      }
+    const newConnection = {
+      name: `Grid Connection ${connections.length + 1}`,
+      type: 'Distribution',
+      location: 'New Location',
+      endpoint: 'http://localhost:8080',
+      protocol: 'HTTP',
+      status: 'disconnected',
+      voltage: 12000,
+      frequency: 60,
+      user_id: user?.id
+    }
 
       const { data, error } = await supabase
         .from('grid_connections')
