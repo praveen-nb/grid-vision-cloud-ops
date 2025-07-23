@@ -40,7 +40,7 @@ serve(async (req) => {
 
     // Process results
     if (dataSimResult.status === 'fulfilled') {
-      const response = await dataSimResult.value.json();
+      const response = dataSimResult.value.data;
       results.dataSimulation = response;
       console.log('Data simulation completed:', response);
     } else {
@@ -49,7 +49,7 @@ serve(async (req) => {
     }
 
     if (aiAnalyticsResult.status === 'fulfilled') {
-      const response = await aiAnalyticsResult.value.json();
+      const response = aiAnalyticsResult.value.data;
       results.aiAnalytics = response;
       console.log('AI analytics completed:', response);
     } else {
@@ -58,7 +58,7 @@ serve(async (req) => {
     }
 
     if (alertMgmtResult.status === 'fulfilled') {
-      const response = await alertMgmtResult.value.json();
+      const response = alertMgmtResult.value.data;
       results.alertManagement = response;
       console.log('Alert management completed:', response);
     } else {
