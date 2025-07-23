@@ -1,5 +1,5 @@
-import { LiveMonitoringDashboard } from "@/components/live-monitoring-dashboard"
+import { EnhancedLiveMonitoring } from "@/components/enhanced-live-monitoring"
 
 export default function LiveMonitoring() {
-  return <LiveMonitoringDashboard />
+  return <EnhancedLiveMonitoring />
 }
