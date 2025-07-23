@@ -1,0 +1,59 @@
+# Copy this file to terraform.tfvars and customize for your environment
+
+# Project Configuration
+project_name = "aws-gis-infrastructure"
+environment  = "dev"
+aws_region   = "us-east-1"
+
+# Networking Configuration
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+public_subnets     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+private_subnets    = ["10.0.10.0/24", "10.0.20.0/24", "10.0.30.0/24"]
+
+# Compute Configuration
+ec2_instance_type = "t3.large"
+key_pair_name     = "your-ec2-key-pair"  # Replace with your actual key pair
+
+# Database Configuration
+db_instance_class     = "db.t3.micro"
+db_allocated_storage  = 20
+
+# Multi-tenant Configuration
+tenants = [
+  {
+    name        = "tenant-demo"
+    environment = "dev"
+    resources = {
+      ec2_instances = 1
+      storage_gb    = 100
+      iot_devices   = 50
+    }
+  },
+  {
+    name        = "tenant-prod"
+    environment = "prod"
+    resources = {
+      ec2_instances = 3
+      storage_gb    = 500
+      iot_devices   = 200
+    }
+  }
+]
+
+# SageMaker Configuration
+sagemaker_instance_type = "ml.t2.medium"
+
+# Monitoring Configuration
+enable_detailed_monitoring = true
+alert_email               = "your-email@example.com"  # Replace with your email
+
+# Security Configuration
+allowed_cidr_blocks = ["0.0.0.0/0"]  # IMPORTANT: Restrict this in production!
+
+# Backup Configuration
+backup_retention_days = 7
+
+# Cost Optimization
+enable_cost_optimization = true
+auto_scaling_enabled     = true
