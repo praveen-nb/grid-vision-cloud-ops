@@ -21,6 +21,9 @@ import {
 } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
+import { GridMetricsChart } from "./dashboard/GridMetricsChart"
+import { LoadingSkeleton } from "./ui/loading-skeleton"
+import { ErrorState, EmptyState } from "./ui/error-state"
 
 interface GridSpecificDashboardProps {
   connection: any
@@ -148,22 +151,7 @@ export function GridSpecificDashboard({ connection }: GridSpecificDashboardProps
   }
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="animate-pulse space-y-2">
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                  <div className="h-8 bg-muted rounded w-1/2"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )
+    return <LoadingSkeleton variant="dashboard" />
   }
 
   // Calculate key metrics
@@ -261,34 +249,43 @@ export function GridSpecificDashboard({ connection }: GridSpecificDashboardProps
 
       {/* Main Dashboard Tabs */}
       <Tabs defaultValue="real-time" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="real-time" className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            Real-Time
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+          <TabsTrigger value="real-time" className="flex items-center gap-1 sm:gap-2">
+            <Activity className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Real-Time</span>
+            <span className="sm:hidden">Live</span>
           </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Analytics
+          <TabsTrigger value="analytics" className="flex items-center gap-1 sm:gap-2">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Analytics</span>
+            <span className="sm:hidden">AI</span>
           </TabsTrigger>
-          <TabsTrigger value="field-ops" className="flex items-center gap-2">
-            <Smartphone className="h-4 w-4" />
-            Field Ops
+          <TabsTrigger value="field-ops" className="flex items-center gap-1 sm:gap-2">
+            <Smartphone className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Field Ops</span>
+            <span className="sm:hidden">Field</span>
           </TabsTrigger>
-          <TabsTrigger value="compliance" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            Compliance
+          <TabsTrigger value="compliance" className="flex items-center gap-1 sm:gap-2">
+            <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden lg:inline">Compliance</span>
+            <span className="lg:hidden">Comp</span>
           </TabsTrigger>
-          <TabsTrigger value="customer" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Customer
+          <TabsTrigger value="customer" className="flex items-center gap-1 sm:gap-2">
+            <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden lg:inline">Customer</span>
+            <span className="lg:hidden">Cust</span>
           </TabsTrigger>
-          <TabsTrigger value="environmental" className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Environmental
+          <TabsTrigger value="environmental" className="flex items-center gap-1 sm:gap-2">
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden lg:inline">Environmental</span>
+            <span className="lg:hidden">Env</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="real-time" className="space-y-4">
+          {/* Grid Metrics Chart */}
+          <GridMetricsChart metrics={metrics} loading={loading} />
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Recent Metrics */}
             <Card>

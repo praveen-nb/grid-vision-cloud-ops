@@ -26,16 +26,16 @@ const App = () => (
       <BrowserRouter>
         <div className="min-h-screen bg-background">
           <header className="border-b bg-card shadow-sm">
-            <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold bg-gradient-utility bg-clip-text text-transparent">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-utility bg-clip-text text-transparent">
                   AWS GIS Infrastructure
                 </h1>
                 <Navigation />
               </div>
             </div>
           </header>
-          <main className="max-w-7xl mx-auto px-6 py-8">
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/home" element={<Home />} />

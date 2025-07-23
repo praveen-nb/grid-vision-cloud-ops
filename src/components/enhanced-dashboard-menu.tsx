@@ -6,12 +6,15 @@ import { DashboardHeader } from "./dashboard/DashboardHeader"
 import { SystemOverviewCards } from "./dashboard/SystemOverviewCards"
 import { DashboardTabs } from "./dashboard/DashboardTabs"
 import { QuickActionsPanel } from "./dashboard/QuickActionsPanel"
+import { LoadingSkeleton } from "./ui/loading-skeleton"
+import { ErrorState } from "./ui/error-state"
 
 export function EnhancedDashboardMenu() {
   const { user } = useAuth()
   const [selectedConnection, setSelectedConnection] = useState<any>(null)
   const [connections, setConnections] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [dashboardStats, setDashboardStats] = useState({
     total_connections: 0,
     active_alerts: 0,
@@ -21,51 +24,52 @@ export function EnhancedDashboardMenu() {
 
   useEffect(() => {
     if (user) {
-      loadConnections()
-      loadDashboardStats()
+      loadData()
     }
   }, [user])
 
-  const loadConnections = async () => {
+  const loadData = async () => {
     try {
-      const { data, error } = await supabase
-        .from('grid_connections')
-        .select('*')
-        .order('name')
-
-      if (error) throw error
-
-      setConnections(data || [])
-      if (data && data.length > 0 && !selectedConnection) {
-        setSelectedConnection(data[0])
-      }
+      setLoading(true)
+      setError(null)
+      await Promise.all([loadConnections(), loadDashboardStats()])
     } catch (error) {
-      console.error('Error loading connections:', error)
-      toast.error('Failed to load grid connections')
+      console.error('Error loading dashboard data:', error)
+      setError('Failed to load dashboard data. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const loadDashboardStats = async () => {
-    try {
-      // Load aggregate statistics
-      const [connectionsResult, alertsResult, predictionsResult, fieldOpsResult] = await Promise.all([
-        supabase.from('grid_connections').select('id', { count: 'exact' }),
-        supabase.from('grid_alerts').select('id', { count: 'exact' }).eq('resolved', false),
-        supabase.from('predictive_analytics').select('id', { count: 'exact' }).gte('probability', 0.7),
-        supabase.from('field_operations').select('id', { count: 'exact' }).eq('status', 'in_progress')
-      ])
+  const loadConnections = async () => {
+    const { data, error } = await supabase
+      .from('grid_connections')
+      .select('*')
+      .order('name')
 
-      setDashboardStats({
-        total_connections: connectionsResult.count || 0,
-        active_alerts: alertsResult.count || 0,
-        high_risk_predictions: predictionsResult.count || 0,
-        active_field_ops: fieldOpsResult.count || 0
-      })
-    } catch (error) {
-      console.error('Error loading dashboard stats:', error)
+    if (error) throw error
+
+    setConnections(data || [])
+    if (data && data.length > 0 && !selectedConnection) {
+      setSelectedConnection(data[0])
     }
+  }
+
+  const loadDashboardStats = async () => {
+    // Load aggregate statistics
+    const [connectionsResult, alertsResult, predictionsResult, fieldOpsResult] = await Promise.all([
+      supabase.from('grid_connections').select('id', { count: 'exact' }),
+      supabase.from('grid_alerts').select('id', { count: 'exact' }).eq('resolved', false),
+      supabase.from('predictive_analytics').select('id', { count: 'exact' }).gte('probability', 0.7),
+      supabase.from('field_operations').select('id', { count: 'exact' }).eq('status', 'in_progress')
+    ])
+
+    setDashboardStats({
+      total_connections: connectionsResult.count || 0,
+      active_alerts: alertsResult.count || 0,
+      high_risk_predictions: predictionsResult.count || 0,
+      active_field_ops: fieldOpsResult.count || 0
+    })
   }
 
   const createNewConnection = async () => {
@@ -104,11 +108,11 @@ export function EnhancedDashboardMenu() {
   }
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <SystemOverviewCards stats={dashboardStats} loading={true} />
-      </div>
-    )
+    return <LoadingSkeleton variant="dashboard" />
+  }
+
+  if (error) {
+    return <ErrorState message={error} onRetry={loadData} />
   }
 
   return (

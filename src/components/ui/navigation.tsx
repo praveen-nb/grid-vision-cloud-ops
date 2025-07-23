@@ -7,32 +7,33 @@ interface NavigationProps {
 }
 
 const navigationItems = [
-  { href: "/", label: "Overview" },
-  { href: "/architecture", label: "Architecture" },
-  { href: "/dashboard", label: "Real-time Dashboard" },
-  { href: "/live-monitoring", label: "Live Monitoring" },
-  { href: "/documentation", label: "Documentation" },
-  { href: "/deliverables", label: "Project Deliverables" },
-  { href: "/compliance", label: "Compliance" }
+  { href: "/", label: "Overview", shortLabel: "Home" },
+  { href: "/architecture", label: "Architecture", shortLabel: "Arch" },
+  { href: "/dashboard", label: "Real-time Dashboard", shortLabel: "Dash" },
+  { href: "/live-monitoring", label: "Live Monitoring", shortLabel: "Live" },
+  { href: "/documentation", label: "Documentation", shortLabel: "Docs" },
+  { href: "/deliverables", label: "Project Deliverables", shortLabel: "Files" },
+  { href: "/compliance", label: "Compliance", shortLabel: "Comp" }
 ]
 
 export function Navigation({ className }: NavigationProps) {
   return (
-    <nav className={cn("flex space-x-6", className)}>
+    <nav className={cn("flex flex-wrap gap-2 sm:gap-4", className)}>
       {navigationItems.map((item) => (
         <NavLink
           key={item.href}
           to={item.href}
           className={({ isActive }) =>
             cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+              "px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200",
               isActive
                 ? "bg-primary text-primary-foreground shadow-md"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted"
             )
           }
         >
-          {item.label}
+          <span className="hidden sm:inline">{item.label}</span>
+          <span className="sm:hidden">{item.shortLabel}</span>
         </NavLink>
       ))}
     </nav>

@@ -17,20 +17,20 @@ export function DashboardHeader({
   onCreateConnection 
 }: DashboardHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+    <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start">
       <div>
-        <h1 className="text-4xl font-bold">Grid Vision Operations Center</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Grid Vision Operations Center</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Comprehensive utility grid management and monitoring platform
         </p>
       </div>
       
-      <div className="flex gap-2 items-center w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center w-full lg:w-auto">
         <Select
           value={selectedConnection?.id || ""}
           onValueChange={onConnectionChange}
         >
-          <SelectTrigger className="w-full sm:w-64">
+          <SelectTrigger className="w-full sm:w-64 lg:w-72">
             <SelectValue placeholder="Select a grid connection" />
           </SelectTrigger>
           <SelectContent>
@@ -48,7 +48,7 @@ export function DashboardHeader({
           </SelectContent>
         </Select>
         
-        <Button onClick={onCreateConnection} variant="outline" className="whitespace-nowrap">
+        <Button onClick={onCreateConnection} variant="outline" className="w-full sm:w-auto whitespace-nowrap">
           <Plus className="h-4 w-4 mr-2" />
           Add Grid
         </Button>
