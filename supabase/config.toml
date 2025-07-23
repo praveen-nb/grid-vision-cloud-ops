@@ -8,3 +8,15 @@ verify_jwt = false
 
 [functions.scada-operations]
 verify_jwt = true
+
+[functions.gis-copilot]
+verify_jwt = true
+
+[functions.environmental-data-processor]
+verify_jwt = false
+
+[functions.predictive-analytics-engine]
+verify_jwt = false
+
+[functions.mobile-field-sync]
+verify_jwt = true
