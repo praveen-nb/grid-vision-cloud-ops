@@ -1,27 +1,11 @@
 import { useState, useEffect } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
-  Zap, 
-  Plus, 
-  Eye, 
-  Settings, 
-  AlertTriangle,
-  TrendingUp,
-  Users,
-  Shield,
-  MessageSquare,
-  MapPin,
-  Smartphone
-} from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
-import { GridSpecificDashboard } from "./grid-specific-dashboard"
-import { GISCopilot } from "./gis-copilot"
 import { toast } from "sonner"
+import { DashboardHeader } from "./dashboard/DashboardHeader"
+import { SystemOverviewCards } from "./dashboard/SystemOverviewCards"
+import { DashboardTabs } from "./dashboard/DashboardTabs"
+import { QuickActionsPanel } from "./dashboard/QuickActionsPanel"
 
 export function EnhancedDashboardMenu() {
   const { user } = useAuth()
@@ -122,201 +106,32 @@ export function EnhancedDashboardMenu() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="animate-pulse space-y-2">
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                  <div className="h-8 bg-muted rounded w-1/2"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <SystemOverviewCards stats={dashboardStats} loading={true} />
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* Header with Connection Selector */}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-        <div>
-          <h1 className="text-4xl font-bold">Grid Vision Operations Center</h1>
-          <p className="text-muted-foreground">
-            Comprehensive utility grid management and monitoring platform
-          </p>
-        </div>
-        
-        <div className="flex gap-2 items-center">
-          <Select
-            value={selectedConnection?.id || ""}
-            onValueChange={(value) => {
-              const connection = connections.find(c => c.id === value)
-              setSelectedConnection(connection)
-            }}
-          >
-            <SelectTrigger className="w-64">
-              <SelectValue placeholder="Select a grid connection" />
-            </SelectTrigger>
-            <SelectContent>
-              {connections.map((connection) => (
-                <SelectItem key={connection.id} value={connection.id}>
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4" />
-                    <span>{connection.name}</span>
-                    <Badge variant={connection.status === 'connected' ? 'default' : 'secondary'}>
-                      {connection.status}
-                    </Badge>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Button onClick={createNewConnection} variant="outline">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Grid
-          </Button>
-        </div>
-      </div>
+      <DashboardHeader
+        selectedConnection={selectedConnection}
+        connections={connections}
+        onConnectionChange={(value) => {
+          const connection = connections.find(c => c.id === value)
+          setSelectedConnection(connection)
+        }}
+        onCreateConnection={createNewConnection}
+      />
 
-      {/* System Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Grids</p>
-                <p className="text-2xl font-bold">{dashboardStats.total_connections}</p>
-              </div>
-              <Zap className="h-8 w-8 text-blue-500" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Connected utility networks
-            </p>
-          </CardContent>
-        </Card>
+      <SystemOverviewCards stats={dashboardStats} loading={loading} />
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Alerts</p>
-                <p className="text-2xl font-bold">{dashboardStats.active_alerts}</p>
-              </div>
-              <AlertTriangle className={`h-8 w-8 ${dashboardStats.active_alerts > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Across all connections
-            </p>
-          </CardContent>
-        </Card>
+      <DashboardTabs 
+        selectedConnection={selectedConnection} 
+        onCreateConnection={createNewConnection}
+      />
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">High Risk Assets</p>
-                <p className="text-2xl font-bold">{dashboardStats.high_risk_predictions}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-orange-500" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Predicted failures &gt;70%
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Field Operations</p>
-                <p className="text-2xl font-bold">{dashboardStats.active_field_ops}</p>
-              </div>
-              <Users className="h-8 w-8 text-green-500" />
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Currently in progress
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="grid-dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="grid-dashboard" className="flex items-center gap-2">
-            <Eye className="h-4 w-4" />
-            Grid Dashboard
-          </TabsTrigger>
-          <TabsTrigger value="gis-copilot" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            GIS Copilot
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="grid-dashboard" className="space-y-6">
-          {selectedConnection ? (
-            <GridSpecificDashboard connection={selectedConnection} />
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>No Grid Connection Selected</CardTitle>
-                <CardDescription>
-                  Select a grid connection from the dropdown above or create a new one to view the dashboard.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={createNewConnection} className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Your First Grid Connection
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="gis-copilot" className="space-y-6">
-          <GISCopilot connectionId={selectedConnection?.id} />
-        </TabsContent>
-      </Tabs>
-
-      {/* Quick Actions */}
       {selectedConnection && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions for {selectedConnection.name}</CardTitle>
-            <CardDescription>
-              Common operations and management tasks
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <TrendingUp className="h-6 w-6" />
-                <span>Run Predictive Analysis</span>
-              </Button>
-              
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <MapPin className="h-6 w-6" />
-                <span>Process Environmental Data</span>
-              </Button>
-              
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <Shield className="h-6 w-6" />
-                <span>Security Scan</span>
-              </Button>
-              
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2">
-                <Smartphone className="h-6 w-6" />
-                <span>Sync Mobile Data</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <QuickActionsPanel connection={selectedConnection} />
       )}
     </div>
   )
