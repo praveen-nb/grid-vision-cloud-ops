@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      advanced_analytics: {
+        Row: {
+          accuracy_score: number | null
+          analysis_type: string
+          anomaly_detection: Json
+          confidence_scores: Json
+          connection_id: string
+          created_at: string
+          execution_time_ms: number
+          id: string
+          input_data: Json
+          model_name: string
+          predictions: Json
+          recommendations: Json
+          updated_at: string
+        }
+        Insert: {
+          accuracy_score?: number | null
+          analysis_type: string
+          anomaly_detection?: Json
+          confidence_scores?: Json
+          connection_id: string
+          created_at?: string
+          execution_time_ms?: number
+          id?: string
+          input_data?: Json
+          model_name: string
+          predictions?: Json
+          recommendations?: Json
+          updated_at?: string
+        }
+        Update: {
+          accuracy_score?: number | null
+          analysis_type?: string
+          anomaly_detection?: Json
+          confidence_scores?: Json
+          connection_id?: string
+          created_at?: string
+          execution_time_ms?: number
+          id?: string
+          input_data?: Json
+          model_name?: string
+          predictions?: Json
+          recommendations?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_analytics: {
         Row: {
           actual_outcome: Json | null
@@ -50,6 +98,102 @@ export type Database = {
           prediction_data?: Json
           prediction_type?: string
           severity_level?: string | null
+        }
+        Relationships: []
+      }
+      audit_trail: {
+        Row: {
+          action_details: Json
+          action_type: string
+          created_at: string
+          duration_ms: number | null
+          id: string
+          ip_address: unknown | null
+          outcome: string
+          resource_id: string | null
+          resource_type: string
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_details?: Json
+          action_type: string
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          ip_address?: unknown | null
+          outcome: string
+          resource_id?: string | null
+          resource_type: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_details?: Json
+          action_type?: string
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          ip_address?: unknown | null
+          outcome?: string
+          resource_id?: string | null
+          resource_type?: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      automation_workflows: {
+        Row: {
+          created_at: string
+          description: string | null
+          execution_count: number
+          execution_schedule: Json
+          id: string
+          is_active: boolean
+          last_execution: string | null
+          next_execution: string | null
+          success_rate: number | null
+          trigger_conditions: Json
+          updated_at: string
+          user_id: string
+          workflow_name: string
+          workflow_steps: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          execution_count?: number
+          execution_schedule?: Json
+          id?: string
+          is_active?: boolean
+          last_execution?: string | null
+          next_execution?: string | null
+          success_rate?: number | null
+          trigger_conditions?: Json
+          updated_at?: string
+          user_id: string
+          workflow_name: string
+          workflow_steps?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          execution_count?: number
+          execution_schedule?: Json
+          id?: string
+          is_active?: boolean
+          last_execution?: string | null
+          next_execution?: string | null
+          success_rate?: number | null
+          trigger_conditions?: Json
+          updated_at?: string
+          user_id?: string
+          workflow_name?: string
+          workflow_steps?: Json
         }
         Relationships: []
       }
@@ -706,6 +850,57 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics: {
+        Row: {
+          collection_method: string
+          connection_id: string | null
+          current_value: number
+          data_source: string
+          id: string
+          metric_category: string
+          metric_name: string
+          percentage_change: number | null
+          previous_value: number | null
+          threshold_critical: number | null
+          threshold_warning: number | null
+          timestamp: string
+          trend_direction: string | null
+          unit_of_measure: string
+        }
+        Insert: {
+          collection_method: string
+          connection_id?: string | null
+          current_value: number
+          data_source: string
+          id?: string
+          metric_category: string
+          metric_name: string
+          percentage_change?: number | null
+          previous_value?: number | null
+          threshold_critical?: number | null
+          threshold_warning?: number | null
+          timestamp?: string
+          trend_direction?: string | null
+          unit_of_measure: string
+        }
+        Update: {
+          collection_method?: string
+          connection_id?: string | null
+          current_value?: number
+          data_source?: string
+          id?: string
+          metric_category?: string
+          metric_name?: string
+          percentage_change?: number | null
+          previous_value?: number | null
+          threshold_critical?: number | null
+          threshold_warning?: number | null
+          timestamp?: string
+          trend_direction?: string | null
+          unit_of_measure?: string
+        }
+        Relationships: []
+      }
       predictive_analytics: {
         Row: {
           asset_id: string
@@ -777,6 +972,60 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      real_time_alerts: {
+        Row: {
+          affected_systems: Json
+          alert_category: string
+          auto_resolution: boolean
+          connection_id: string | null
+          created_at: string
+          description: string
+          detection_method: string
+          escalation_rules: Json
+          id: string
+          notification_channels: Json
+          resolution_time_seconds: number | null
+          resolved: boolean
+          resolved_at: string | null
+          severity_level: string
+          title: string
+        }
+        Insert: {
+          affected_systems?: Json
+          alert_category: string
+          auto_resolution?: boolean
+          connection_id?: string | null
+          created_at?: string
+          description: string
+          detection_method: string
+          escalation_rules?: Json
+          id?: string
+          notification_channels?: Json
+          resolution_time_seconds?: number | null
+          resolved?: boolean
+          resolved_at?: string | null
+          severity_level?: string
+          title: string
+        }
+        Update: {
+          affected_systems?: Json
+          alert_category?: string
+          auto_resolution?: boolean
+          connection_id?: string | null
+          created_at?: string
+          description?: string
+          detection_method?: string
+          escalation_rules?: Json
+          id?: string
+          notification_channels?: Json
+          resolution_time_seconds?: number | null
+          resolved?: boolean
+          resolved_at?: string | null
+          severity_level?: string
+          title?: string
         }
         Relationships: []
       }
