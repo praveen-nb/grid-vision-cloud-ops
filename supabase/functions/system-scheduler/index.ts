@@ -27,43 +27,52 @@ serve(async (req) => {
     };
 
     // Run all systems in parallel for efficiency
-    const [dataSimResult, aiAnalyticsResult, alertMgmtResult] = await Promise.allSettled([
-      // 1. Generate real-time data
-      supabase.functions.invoke('realtime-data-simulator'),
+    try {
+      console.log('Invoking realtime-data-simulator...');
+      const dataSimResult = await supabase.functions.invoke('realtime-data-simulator');
+      console.log('Data simulation response:', dataSimResult);
       
-      // 2. Process AI analytics
-      supabase.functions.invoke('ai-analytics-processor'),
-      
-      // 3. Manage alerts
-      supabase.functions.invoke('alert-management-system')
-    ]);
-
-    // Process results
-    if (dataSimResult.status === 'fulfilled') {
-      const response = dataSimResult.value.data;
-      results.dataSimulation = response;
-      console.log('Data simulation completed:', response);
-    } else {
-      console.error('Data simulation failed:', dataSimResult.reason);
-      results.dataSimulation = { error: dataSimResult.reason.message };
+      if (dataSimResult.error) {
+        console.error('Data simulation error:', dataSimResult.error);
+        results.dataSimulation = { error: dataSimResult.error.message };
+      } else {
+        results.dataSimulation = dataSimResult.data;
+      }
+    } catch (error) {
+      console.error('Data simulation failed:', error);
+      results.dataSimulation = { error: error.message };
     }
 
-    if (aiAnalyticsResult.status === 'fulfilled') {
-      const response = aiAnalyticsResult.value.data;
-      results.aiAnalytics = response;
-      console.log('AI analytics completed:', response);
-    } else {
-      console.error('AI analytics failed:', aiAnalyticsResult.reason);
-      results.aiAnalytics = { error: aiAnalyticsResult.reason.message };
+    try {
+      console.log('Invoking ai-analytics-processor...');
+      const aiAnalyticsResult = await supabase.functions.invoke('ai-analytics-processor');
+      console.log('AI analytics response:', aiAnalyticsResult);
+      
+      if (aiAnalyticsResult.error) {
+        console.error('AI analytics error:', aiAnalyticsResult.error);
+        results.aiAnalytics = { error: aiAnalyticsResult.error.message };
+      } else {
+        results.aiAnalytics = aiAnalyticsResult.data;
+      }
+    } catch (error) {
+      console.error('AI analytics failed:', error);
+      results.aiAnalytics = { error: error.message };
     }
 
-    if (alertMgmtResult.status === 'fulfilled') {
-      const response = alertMgmtResult.value.data;
-      results.alertManagement = response;
-      console.log('Alert management completed:', response);
-    } else {
-      console.error('Alert management failed:', alertMgmtResult.reason);
-      results.alertManagement = { error: alertMgmtResult.reason.message };
+    try {
+      console.log('Invoking alert-management-system...');
+      const alertMgmtResult = await supabase.functions.invoke('alert-management-system');
+      console.log('Alert management response:', alertMgmtResult);
+      
+      if (alertMgmtResult.error) {
+        console.error('Alert management error:', alertMgmtResult.error);
+        results.alertManagement = { error: alertMgmtResult.error.message };
+      } else {
+        results.alertManagement = alertMgmtResult.data;
+      }
+    } catch (error) {
+      console.error('Alert management failed:', error);
+      results.alertManagement = { error: error.message };
     }
 
     // Calculate summary statistics
