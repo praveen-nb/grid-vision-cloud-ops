@@ -1,330 +1,368 @@
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Separator } from "@/components/ui/separator"
-import { MessageSquare, Send, Database, Clock, AlertCircle, CheckCircle } from "lucide-react"
-import { supabase } from "@/integrations/supabase/client"
-import { toast } from "sonner"
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { 
+  Mic, 
+  MicOff, 
+  MessageSquare, 
+  Send, 
+  Bot, 
+  User, 
+  Loader2,
+  Wifi,
+  WifiOff 
+} from 'lucide-react';
+import { RealtimeChat } from '@/utils/RealtimeAudio';
+import { useToast } from '@/hooks/use-toast';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 
-interface GISCopilotProps {
-  connectionId?: string
+interface Message {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  isAudio?: boolean;
 }
 
-export function GISCopilot({ connectionId }: GISCopilotProps) {
-  const [query, setQuery] = useState("")
-  const [results, setResults] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [queryHistory, setQueryHistory] = useState<any[]>([])
+interface GISCopilotProps {
+  className?: string;
+  connectionId?: string; // Keep for backward compatibility
+}
 
-  const exampleQueries = [
-    "Show me all high-risk assets in the last 30 days",
-    "Find substations with voltage above 50kV",
-    "List all maintenance operations completed this week",
-    "Show customer incidents with more than 100 affected customers",
-    "Find environmental data with critical severity level",
-    "Show predictive analytics with failure probability above 70%"
-  ]
+export function GISCopilot({ className, connectionId }: GISCopilotProps) {
+  const { toast } = useToast();
+  const [isConnected, setIsConnected] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [textInput, setTextInput] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const chatRef = useRef<RealtimeChat | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleQuerySubmit = async (queryText: string = query) => {
-    if (!queryText.trim()) {
-      toast.error("Please enter a query")
-      return
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleMessage = (event: any) => {
+    console.log('Received message:', event);
+    
+    switch (event.type) {
+      case 'response.audio.delta':
+        setIsSpeaking(true);
+        break;
+        
+      case 'response.audio.done':
+        setIsSpeaking(false);
+        break;
+        
+      case 'response.audio_transcript.delta':
+        // Update the current assistant message with transcript
+        setMessages(prev => {
+          const lastMessage = prev[prev.length - 1];
+          if (lastMessage && lastMessage.type === 'assistant') {
+            return prev.map((msg, index) => 
+              index === prev.length - 1 
+                ? { ...msg, content: msg.content + event.delta }
+                : msg
+            );
+          } else {
+            return [...prev, {
+              id: `msg-${Date.now()}`,
+              type: 'assistant',
+              content: event.delta,
+              timestamp: new Date(),
+              isAudio: true
+            }];
+          }
+        });
+        break;
+        
+      case 'response.created':
+        setIsLoading(false);
+        break;
+        
+      case 'response.done':
+        setIsSpeaking(false);
+        setIsLoading(false);
+        break;
+        
+      case 'error':
+        toast({
+          title: "Connection Error",
+          description: event.message || "Failed to connect to AI service",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        break;
     }
+  };
 
-    setLoading(true)
+  const startConversation = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('gis-copilot', {
-        body: {
-          query: queryText,
-          connectionId: connectionId || null
-        }
-      })
-
-      if (error) {
-        throw error
-      }
-
-      setResults(data)
-      setQuery("")
+      setIsLoading(true);
       
-      // Refresh query history
-      loadQueryHistory()
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      if (data.error) {
-        toast.error(`Query error: ${data.error}`)
-      } else {
-        toast.success(`Query executed successfully. ${data.row_count} rows returned.`)
-      }
+      chatRef.current = new RealtimeChat(handleMessage);
+      await chatRef.current.init();
+      
+      setIsConnected(true);
+      setIsRecording(true);
+      
+      // Add welcome message
+      setMessages([{
+        id: 'welcome',
+        type: 'assistant',
+        content: 'Hello! I\'m your Grid Operations AI Assistant. I can help you monitor your electrical grid, analyze metrics, check alerts, and provide operational guidance. How can I assist you today?',
+        timestamp: new Date()
+      }]);
+      
+      toast({
+        title: "AI Copilot Connected",
+        description: "Voice interface is ready. You can speak or type your questions.",
+      });
+      
     } catch (error) {
-      console.error('Error executing query:', error)
-      toast.error('Failed to execute query')
+      console.error('Error starting conversation:', error);
+      toast({
+        title: "Connection Failed",
+        description: error instanceof Error ? error.message : 'Failed to start AI copilot',
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const loadQueryHistory = async () => {
+  const endConversation = () => {
+    chatRef.current?.disconnect();
+    setIsConnected(false);
+    setIsRecording(false);
+    setIsSpeaking(false);
+    setIsLoading(false);
+    
+    toast({
+      title: "AI Copilot Disconnected",
+      description: "Voice interface has been stopped."
+    });
+  };
+
+  const sendTextMessage = () => {
+    if (!textInput.trim() || !isConnected || !chatRef.current) return;
+
+    // Add user message to chat
+    const userMessage: Message = {
+      id: `msg-${Date.now()}`,
+      type: 'user',
+      content: textInput,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+    
     try {
-      const { data, error } = await supabase
-        .from('copilot_queries')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10)
-
-      if (!error && data) {
-        setQueryHistory(data)
-      }
+      chatRef.current.sendTextMessage(textInput);
+      setTextInput('');
     } catch (error) {
-      console.error('Error loading query history:', error)
+      console.error('Error sending message:', error);
+      toast({
+        title: "Send Failed",
+        description: "Failed to send message to AI copilot",
+        variant: "destructive"
+      });
+      setIsLoading(false);
     }
-  }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendTextMessage();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      chatRef.current?.disconnect();
+    };
+  }, []);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <MessageSquare className="h-6 w-6 text-primary" />
-        <div>
-          <h2 className="text-2xl font-bold">GIS Copilot</h2>
-          <p className="text-muted-foreground">Ask questions about your grid data in natural language</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Query Interface */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Ask a Question</CardTitle>
+    <div className={`flex flex-col h-full ${className}`}>
+      <Card className="flex-1 flex flex-col">
+        <CardHeader className="flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Bot className="h-5 w-5 text-primary" />
+                Grid Operations AI Copilot
+              </CardTitle>
               <CardDescription>
-                Use natural language to query your grid data. The AI will convert your question to SQL and execute it safely.
+                Your intelligent assistant for grid monitoring and operations
               </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Textarea
-                  placeholder="e.g., Show me all assets with high failure probability in the downtown area"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="min-h-[80px]"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                      e.preventDefault()
-                      handleQuerySubmit()
-                    }
-                  }}
-                />
+            </div>
+            <div className="flex items-center gap-2">
+              {isConnected ? (
+                <Badge variant="default" className="gap-1">
+                  <Wifi className="h-3 w-3" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="secondary" className="gap-1">
+                  <WifiOff className="h-3 w-3" />
+                  Disconnected
+                </Badge>
+              )}
+              {isSpeaking && (
+                <Badge variant="outline" className="gap-1 animate-pulse">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Speaking
+                </Badge>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex-1 flex flex-col min-h-0">
+          {!isConnected ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <Bot className="h-16 w-16 text-muted-foreground mx-auto" />
+                <div>
+                  <h3 className="text-lg font-semibold">Start AI Copilot</h3>
+                  <p className="text-muted-foreground">
+                    Connect to begin voice and text conversations with your AI assistant
+                  </p>
+                </div>
                 <Button 
-                  onClick={() => handleQuerySubmit()} 
-                  disabled={loading || !query.trim()}
-                  className="self-end"
+                  onClick={startConversation}
+                  disabled={isLoading}
+                  size="lg"
+                  className="gap-2"
                 >
-                  <Send className="h-4 w-4" />
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                  {isLoading ? 'Connecting...' : 'Start Conversation'}
                 </Button>
               </div>
-              
-              <div className="text-xs text-muted-foreground">
-                Tip: Press Ctrl+Enter to submit your query
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          ) : (
+            <>
+              {/* Messages Area */}
+              <ScrollArea className="flex-1 mb-4">
+                <div className="space-y-4 p-4">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex gap-3 ${
+                        message.type === 'user' ? 'justify-end' : 'justify-start'
+                      }`}
+                    >
+                      <div
+                        className={`flex gap-3 max-w-[70%] ${
+                          message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
+                        }`}
+                      >
+                        <div
+                          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                            message.type === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
+                        >
+                          {message.type === 'user' ? (
+                            <User className="h-4 w-4" />
+                          ) : (
+                            <Bot className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div
+                          className={`rounded-lg p-3 ${
+                            message.type === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted'
+                          }`}
+                        >
+                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                          <p className="text-xs opacity-70 mt-1">
+                            {message.timestamp.toLocaleTimeString()}
+                            {message.isAudio && ' • Voice'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex gap-3 justify-start">
+                      <div className="flex gap-3 max-w-[70%]">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted text-muted-foreground">
+                          <Bot className="h-4 w-4" />
+                        </div>
+                        <div className="rounded-lg p-3 bg-muted">
+                          <LoadingSkeleton />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </ScrollArea>
 
-          {/* Example Queries */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Example Queries</CardTitle>
-              <CardDescription>Click on any example to try it</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {exampleQueries.map((example, index) => (
+              {/* Input Area */}
+              <div className="flex-shrink-0 space-y-3">
+                <Alert>
+                  <Mic className="h-4 w-4" />
+                  <AlertDescription>
+                    {isRecording 
+                      ? "Voice recording is active. You can speak directly or type below."
+                      : "Voice recording is paused. Use text input or restart conversation."
+                    }
+                  </AlertDescription>
+                </Alert>
+
+                <div className="flex gap-2">
+                  <Input
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type your message or use voice..."
+                    disabled={!isConnected}
+                    className="flex-1"
+                  />
                   <Button
-                    key={index}
+                    onClick={sendTextMessage}
+                    disabled={!isConnected || !textInput.trim() || isLoading}
+                    size="sm"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={endConversation}
                     variant="outline"
                     size="sm"
-                    className="justify-start text-left h-auto p-3"
-                    onClick={() => handleQuerySubmit(example)}
-                    disabled={loading}
                   >
-                    {example}
+                    {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                   </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Query Results */}
-          {results && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="h-5 w-5" />
-                  Query Results
-                  {results.error ? (
-                    <AlertCircle className="h-4 w-4 text-destructive" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  )}
-                </CardTitle>
-                <CardDescription>
-                  {results.error ? (
-                    <span className="text-destructive">Query failed to execute</span>
-                  ) : (
-                    <span>
-                      Returned {results.row_count} rows in {results.execution_time_ms}ms
-                    </span>
-                  )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Generated SQL */}
-                <div>
-                  <h4 className="font-medium mb-2">Generated SQL Query:</h4>
-                  <div className="bg-muted p-3 rounded-lg">
-                    <code className="text-sm font-mono">{results.query}</code>
-                  </div>
                 </div>
-
-                <Separator />
-
-                {/* Results Table */}
-                {results.error ? (
-                  <div className="text-destructive">
-                    <h4 className="font-medium mb-2">Error:</h4>
-                    <p>{results.error}</p>
-                  </div>
-                ) : results.results && results.results.length > 0 ? (
-                  <div>
-                    <h4 className="font-medium mb-2">Results:</h4>
-                    <div className="border rounded-lg overflow-auto max-h-96">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            {Object.keys(results.results[0]).map((column) => (
-                              <TableHead key={column}>{column}</TableHead>
-                            ))}
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {results.results.slice(0, 100).map((row: any, index: number) => (
-                            <TableRow key={index}>
-                              {Object.values(row).map((value: any, cellIndex) => (
-                                <TableCell key={cellIndex}>
-                                  {typeof value === 'object' && value !== null 
-                                    ? JSON.stringify(value)
-                                    : String(value)
-                                  }
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                    {results.results.length > 100 && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Showing first 100 rows of {results.results.length} total results
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-muted-foreground">
-                    No results returned from query
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              </div>
+            </>
           )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-4">
-          {/* Query History */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Recent Queries
-              </CardTitle>
-              <CardDescription>Your query history</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {queryHistory.map((historyItem, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-medium line-clamp-2">
-                        {historyItem.natural_query}
-                      </p>
-                      <Badge variant={historyItem.executed_successfully ? "default" : "destructive"}>
-                        {historyItem.executed_successfully ? "✓" : "✗"}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>{new Date(historyItem.created_at).toLocaleTimeString()}</span>
-                      {historyItem.execution_time_ms && (
-                        <span>• {historyItem.execution_time_ms}ms</span>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-xs"
-                      onClick={() => setQuery(historyItem.natural_query)}
-                    >
-                      Use this query
-                    </Button>
-                    {index < queryHistory.length - 1 && <Separator />}
-                  </div>
-                ))}
-                
-                {queryHistory.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    No queries yet. Try asking a question!
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Tips */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tips for Better Queries</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <h4 className="font-medium">Be Specific</h4>
-                <p className="text-muted-foreground">
-                  Include specific criteria like dates, locations, or thresholds
-                </p>
-              </div>
-              <div>
-                <h4 className="font-medium">Use Domain Terms</h4>
-                <p className="text-muted-foreground">
-                  Reference "substations", "transformers", "alerts", etc.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-medium">Filter by Time</h4>
-                <p className="text-muted-foreground">
-                  Add time ranges like "last week", "this month", "past 30 days"
-                </p>
-              </div>
-              <div>
-                <h4 className="font-medium">Ask for Insights</h4>
-                <p className="text-muted-foreground">
-                  Try "trends", "patterns", "correlations", "summaries"
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
