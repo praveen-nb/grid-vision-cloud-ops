@@ -123,15 +123,74 @@ output "tenant_s3_buckets" {
   value       = module.multi_tenant_iam.tenant_buckets
 }
 
+# Lambda Outputs
+output "lambda_function_names" {
+  description = "Names of the Lambda functions"
+  value = {
+    health_check   = module.lambda.health_check_function_name
+    data_processor = module.lambda.data_processor_function_name
+  }
+}
+
+# API Gateway Outputs
+output "api_gateway_url" {
+  description = "API Gateway invoke URL"
+  value       = module.api_gateway.api_gateway_invoke_url
+}
+
+output "api_gateway_key" {
+  description = "API Gateway key"
+  value       = module.api_gateway.api_key_value
+  sensitive   = true
+}
+
+# CloudFront Outputs
+output "cloudfront_distribution_id" {
+  description = "CloudFront distribution ID"
+  value       = module.cloudfront.cloudfront_distribution_id
+}
+
+output "cloudfront_domain_name" {
+  description = "CloudFront domain name"
+  value       = module.cloudfront.cloudfront_domain_name
+}
+
+# Route53 Outputs
+output "hosted_zone_id" {
+  description = "Route53 hosted zone ID"
+  value       = module.route53.hosted_zone_id
+}
+
+output "name_servers" {
+  description = "Route53 name servers"
+  value       = module.route53.hosted_zone_name_servers
+}
+
+# Secrets Manager Outputs
+output "secrets_arns" {
+  description = "ARNs of secrets in Secrets Manager"
+  value = {
+    db_credentials      = module.secrets_manager.db_credentials_secret_arn
+    api_keys           = module.secrets_manager.api_keys_secret_arn
+    iot_certificates   = module.secrets_manager.iot_certificates_secret_arn
+    app_config         = module.secrets_manager.app_config_secret_arn
+  }
+}
+
 # Cost Information
 output "estimated_monthly_cost" {
   description = "Estimated monthly cost (approximate)"
   value = {
-    compute   = "~$150-300/month (depending on usage)"
-    storage   = "~$50-100/month (depending on data volume)"
-    database  = "~$30-60/month"
-    iot       = "~$20-50/month (depending on device count)"
-    ml        = "~$100-200/month (depending on inference volume)"
-    total     = "~$350-710/month"
+    compute     = "~$150-300/month (depending on usage)"
+    storage     = "~$50-100/month (depending on data volume)"
+    database    = "~$30-60/month"
+    iot         = "~$20-50/month (depending on device count)"
+    ml          = "~$100-200/month (depending on inference volume)"
+    lambda      = "~$10-30/month (depending on invocations)"
+    api_gateway = "~$5-20/month (depending on requests)"
+    cloudfront  = "~$10-50/month (depending on traffic)"
+    secrets     = "~$5-15/month"
+    route53     = "~$2-10/month"
+    total       = "~$382-785/month"
   }
 }

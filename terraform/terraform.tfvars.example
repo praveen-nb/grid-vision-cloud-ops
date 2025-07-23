@@ -57,3 +57,15 @@ backup_retention_days = 7
 # Cost Optimization
 enable_cost_optimization = true
 auto_scaling_enabled     = true
+
+# Secrets Configuration (IMPORTANT: Set these in production!)
+db_password      = "change-me-in-production"
+jwt_secret       = "your-jwt-secret-key"
+encryption_key   = "your-encryption-key"
+external_api_key = ""
+
+# DNS and CDN Configuration
+domain_name         = ""  # Set your domain name if you have one
+create_hosted_zone  = false  # Set to true if you want to manage DNS with Route53
+enable_health_checks = true
+enable_waf          = true

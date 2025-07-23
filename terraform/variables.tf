@@ -146,3 +146,57 @@ variable "auto_scaling_enabled" {
   type        = bool
   default     = true
 }
+
+# Secrets and Security
+variable "db_password" {
+  description = "Database password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "jwt_secret" {
+  description = "JWT secret for authentication"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "encryption_key" {
+  description = "Application encryption key"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "external_api_key" {
+  description = "External API key"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+# DNS and CDN
+variable "domain_name" {
+  description = "Domain name for the application"
+  type        = string
+  default     = ""
+}
+
+variable "create_hosted_zone" {
+  description = "Whether to create a Route53 hosted zone"
+  type        = bool
+  default     = false
+}
+
+variable "enable_health_checks" {
+  description = "Enable Route53 health checks"
+  type        = bool
+  default     = true
+}
+
+variable "enable_waf" {
+  description = "Enable WAF for CloudFront distribution"
+  type        = bool
+  default     = true
+}

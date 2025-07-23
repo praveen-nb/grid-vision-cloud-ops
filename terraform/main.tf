@@ -139,3 +139,65 @@ module "multi_tenant_iam" {
   environment  = var.environment
   tenants      = var.tenants
 }
+
+# Lambda Functions
+module "lambda" {
+  source = "./modules/lambda"
+  
+  project_name        = var.project_name
+  environment         = var.environment
+  kinesis_stream_arn  = module.streaming.kinesis_stream_arn
+  kinesis_stream_name = module.streaming.kinesis_stream_name
+}
+
+# API Gateway
+module "api_gateway" {
+  source = "./modules/api-gateway"
+  
+  project_name                      = var.project_name
+  environment                       = var.environment
+  health_check_lambda_invoke_arn    = module.lambda.health_check_invoke_arn
+  health_check_lambda_function_name = module.lambda.health_check_function_name
+}
+
+# Secrets Manager
+module "secrets_manager" {
+  source = "./modules/secrets-manager"
+  
+  project_name       = var.project_name
+  environment        = var.environment
+  aws_region         = var.aws_region
+  db_password        = var.db_password
+  db_host            = module.database.endpoint
+  db_port            = module.database.port
+  api_gateway_key    = module.api_gateway.api_key_value
+  jwt_secret         = var.jwt_secret
+  encryption_key     = var.encryption_key
+  admin_email        = var.alert_email
+  external_api_key   = var.external_api_key
+}
+
+# CloudFront CDN
+module "cloudfront" {
+  source = "./modules/cloudfront"
+  
+  project_name             = var.project_name
+  environment              = var.environment
+  api_gateway_invoke_url   = module.api_gateway.api_gateway_invoke_url
+  api_gateway_stage_name   = module.api_gateway.api_gateway_stage_name
+  enable_waf              = var.enable_waf
+}
+
+# Route53 DNS
+module "route53" {
+  source = "./modules/route53"
+  
+  project_name           = var.project_name
+  environment            = var.environment
+  aws_region             = var.aws_region
+  domain_name            = var.domain_name
+  create_hosted_zone     = var.create_hosted_zone
+  cloudfront_domain_name = module.cloudfront.cloudfront_domain_name
+  enable_health_checks   = var.enable_health_checks
+  sns_topic_arn          = module.monitoring.sns_topic_arn
+}
