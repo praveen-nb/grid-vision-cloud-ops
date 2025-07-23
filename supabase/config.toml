@@ -32,3 +32,12 @@ verify_jwt = false
 
 [functions.alert-management-system]
 verify_jwt = false
+
+[functions.aws-infrastructure-monitor]
+verify_jwt = false
+
+[functions.aws-security-monitor]
+verify_jwt = false
+
+[functions.aws-resource-control]
+verify_jwt = true

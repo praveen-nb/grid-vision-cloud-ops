@@ -604,6 +604,36 @@ export type Database = {
           },
         ]
       }
+      infrastructure_status: {
+        Row: {
+          created_at: string
+          id: string
+          provider: string
+          status_data: Json
+          timestamp: string
+          total_cost: number
+          total_resources: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider?: string
+          status_data?: Json
+          timestamp?: string
+          total_cost?: number
+          total_resources?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider?: string
+          status_data?: Json
+          timestamp?: string
+          total_cost?: number
+          total_resources?: number
+        }
+        Relationships: []
+      }
       iot_devices: {
         Row: {
           created_at: string
@@ -747,6 +777,36 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      resource_actions: {
+        Row: {
+          action_type: string
+          created_at: string
+          details: Json
+          executed_at: string
+          id: string
+          resource_id: string
+          status: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          details?: Json
+          executed_at?: string
+          id?: string
+          resource_id: string
+          status?: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          details?: Json
+          executed_at?: string
+          id?: string
+          resource_id?: string
+          status?: string
         }
         Relationships: []
       }
