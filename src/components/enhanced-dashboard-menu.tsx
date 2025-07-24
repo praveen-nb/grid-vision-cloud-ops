@@ -8,6 +8,18 @@ import { DashboardTabs } from "./dashboard/DashboardTabs"
 import { QuickActionsPanel } from "./dashboard/QuickActionsPanel"
 import { LoadingSkeleton } from "./ui/loading-skeleton"
 import { ErrorState } from "./ui/error-state"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Plus } from "lucide-react"
 
 export function EnhancedDashboardMenu() {
   const { user } = useAuth()
@@ -21,6 +33,8 @@ export function EnhancedDashboardMenu() {
     high_risk_predictions: 0,
     active_field_ops: 0
   })
+  const [showNameDialog, setShowNameDialog] = useState(false)
+  const [newGridName, setNewGridName] = useState("")
 
   useEffect(() => {
     if (user) {
@@ -72,10 +86,17 @@ export function EnhancedDashboardMenu() {
     })
   }
 
-  const createNewConnection = async () => {
+  const createNewConnection = async (gridName?: string) => {
+    if (!gridName && !showNameDialog) {
+      setShowNameDialog(true)
+      return
+    }
+
+    const finalName = gridName || newGridName || `Grid Connection ${connections.length + 1}`
+    
     try {
       const newConnection = {
-        name: `Grid Connection ${connections.length + 1}`,
+        name: finalName,
         type: 'Distribution',
         location: 'New Location',
         endpoint: 'http://localhost:8080',
@@ -96,15 +117,27 @@ export function EnhancedDashboardMenu() {
       if (data && data[0]) {
         setConnections([...connections, data[0]])
         setSelectedConnection(data[0])
-        toast.success('New grid connection created')
+        toast.success(`Grid "${finalName}" created successfully`)
         
         // Update stats
         loadDashboardStats()
+        
+        // Reset dialog state
+        setShowNameDialog(false)
+        setNewGridName("")
       }
     } catch (error) {
       console.error('Error creating connection:', error)
       toast.error('Failed to create grid connection')
     }
+  }
+
+  const handleCreateWithName = () => {
+    if (!newGridName.trim()) {
+      toast.error('Please enter a grid name')
+      return
+    }
+    createNewConnection(newGridName.trim())
   }
 
   const deleteConnection = async (connectionId: string) => {
@@ -150,14 +183,14 @@ export function EnhancedDashboardMenu() {
           const connection = connections.find(c => c.id === value)
           setSelectedConnection(connection)
         }}
-        onCreateConnection={createNewConnection}
+        onCreateConnection={() => createNewConnection()}
       />
 
       <SystemOverviewCards stats={dashboardStats} loading={loading} />
 
       <DashboardTabs 
         selectedConnection={selectedConnection} 
-        onCreateConnection={createNewConnection}
+        onCreateConnection={() => createNewConnection()}
         onDeleteConnection={deleteConnection}
         connections={connections}
       />
@@ -165,6 +198,56 @@ export function EnhancedDashboardMenu() {
       {selectedConnection && (
         <QuickActionsPanel connection={selectedConnection} />
       )}
+
+      {/* Grid Name Dialog */}
+      <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Grid Connection</DialogTitle>
+            <DialogDescription>
+              Enter a name for your new grid connection. You can configure the details later.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="grid-name">Grid Name</Label>
+              <Input
+                id="grid-name"
+                placeholder="e.g., Pacific Northwest Grid, Main Distribution Network"
+                value={newGridName}
+                onChange={(e) => setNewGridName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreateWithName()
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => {
+                setShowNameDialog(false)
+                setNewGridName("")
+              }}
+              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleCreateWithName}
+              disabled={!newGridName.trim()}
+              className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Create Grid
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
