@@ -123,7 +123,6 @@ export const useRealTimeMetrics = (connectionId?: string) => {
           filter: `connection_id=eq.${connectionId}`
         },
         (payload) => {
-          console.log('New metric received:', payload);
           const newMetric = payload.new as GridMetric;
           setMetrics(prev => [newMetric, ...prev.slice(0, 99)]); // Keep last 100 records
           
@@ -151,7 +150,6 @@ export const useRealTimeMetrics = (connectionId?: string) => {
           filter: `connection_id=eq.${connectionId}`
         },
         (payload) => {
-          console.log('New alert received:', payload);
           const newAlert = payload.new as GridAlert;
           setAlerts(prev => [newAlert, ...prev]);
           
@@ -172,7 +170,6 @@ export const useRealTimeMetrics = (connectionId?: string) => {
           filter: `connection_id=eq.${connectionId}`
         },
         (payload) => {
-          console.log('Alert updated:', payload);
           const updatedAlert = payload.new as GridAlert;
           setAlerts(prev => prev.map(alert => 
             alert.id === updatedAlert.id ? updatedAlert : alert
@@ -193,7 +190,6 @@ export const useRealTimeMetrics = (connectionId?: string) => {
           filter: `connection_id=eq.${connectionId}`
         },
         (payload) => {
-          console.log('New AI analytic received:', payload);
           const newAnalytic = payload.new as AIAnalytic;
           setAnalytics(prev => [newAnalytic, ...prev.slice(0, 49)]); // Keep last 50 records
           

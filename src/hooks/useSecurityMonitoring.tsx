@@ -110,7 +110,6 @@ export const useSecurityMonitoring = () => {
           table: 'security_events'
         },
         (payload) => {
-          console.log('New security event:', payload);
           const newEvent = payload.new as SecurityEvent;
           setEvents(prev => [newEvent, ...prev.slice(0, 99)]);
           

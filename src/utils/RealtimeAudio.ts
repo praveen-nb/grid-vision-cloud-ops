@@ -188,19 +188,15 @@ export class RealtimeChat {
 
   async init() {
     try {
-      console.log('Initializing Realtime Chat');
-      
       // Initialize audio context
       this.audioContext = new AudioContext();
       
       // Connect to our Supabase edge function
       const wsUrl = `wss://melusgrbbjgybhqkasoi.functions.supabase.co/gis-copilot`;
-      console.log('Connecting to:', wsUrl);
       
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = () => {
-        console.log('Connected to AI Copilot');
         this.isConnected = true;
         
         // Start recording
@@ -210,7 +206,6 @@ export class RealtimeChat {
       this.ws.onmessage = async (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('Received message:', data.type);
           
           // Handle audio data
           if (data.type === 'response.audio.delta') {
@@ -235,7 +230,6 @@ export class RealtimeChat {
       };
 
       this.ws.onclose = () => {
-        console.log('WebSocket closed');
         this.isConnected = false;
       };
 
@@ -258,7 +252,6 @@ export class RealtimeChat {
       });
       
       await this.recorder.start();
-      console.log('Recording started');
     } catch (error) {
       console.error('Error starting recording:', error);
     }
@@ -288,7 +281,6 @@ export class RealtimeChat {
   }
 
   disconnect() {
-    console.log('Disconnecting...');
     this.recorder?.stop();
     this.ws?.close();
     this.audioContext?.close();

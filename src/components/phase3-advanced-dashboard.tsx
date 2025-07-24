@@ -43,7 +43,6 @@ export const Phase3AdvancedDashboard = () => {
       const { data } = await supabase.functions.invoke('ml-analytics-engine', {
         body: { analysis_type: analysisType, input_data: {} }
       });
-      console.log('ML Analysis completed:', data);
       fetchPhase3Data();
     } catch (error) {
       console.error('ML Analysis failed:', error);
@@ -55,7 +54,6 @@ export const Phase3AdvancedDashboard = () => {
       const { data } = await supabase.functions.invoke('advanced-monitoring-system', {
         body: { action: 'monitor' }
       });
-      console.log('Advanced monitoring completed:', data);
       fetchPhase3Data();
     } catch (error) {
       console.error('Advanced monitoring failed:', error);

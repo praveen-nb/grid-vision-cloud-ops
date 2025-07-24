@@ -53,8 +53,6 @@ export function GISCopilot({ className, connectionId }: GISCopilotProps) {
   }, [messages]);
 
   const handleMessage = (event: any) => {
-    console.log('Received message:', event);
-    
     switch (event.type) {
       case 'response.audio.delta':
         setIsSpeaking(true);

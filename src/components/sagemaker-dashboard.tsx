@@ -53,7 +53,6 @@ export const SageMakerDashboard = () => {
           instance_count: 1
         }
       });
-      console.log('Model deployment started:', data);
       fetchSageMakerData(); // Refresh data
     } catch (error) {
       console.error('Error deploying model:', error);
@@ -72,7 +71,6 @@ export const SageMakerDashboard = () => {
           hyperparameters: { max_depth: 6, num_round: 100 }
         }
       });
-      console.log('Training job started:', data);
       fetchSageMakerData(); // Refresh data
     } catch (error) {
       console.error('Error starting training job:', error);

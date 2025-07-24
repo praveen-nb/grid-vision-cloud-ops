@@ -240,8 +240,6 @@ export const useGridConnections = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          console.log('Grid connection change:', payload);
-          
           if (payload.eventType === 'INSERT') {
             const newConnection = payload.new as GridConnection;
             setConnections(prev => {

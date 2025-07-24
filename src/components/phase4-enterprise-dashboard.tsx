@@ -53,7 +53,6 @@ export const Phase4EnterpriseDashboard = () => {
           max_users: 50
         }
       });
-      console.log('Organization created:', data);
       fetchEnterpriseData(); // Refresh data
     } catch (error) {
       console.error('Error creating organization:', error);

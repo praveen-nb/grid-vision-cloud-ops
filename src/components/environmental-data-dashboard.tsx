@@ -63,7 +63,6 @@ export function EnvironmentalDataDashboard() {
         .on('postgres_changes', 
           { event: 'INSERT', schema: 'public', table: 'environmental_data' },
           (payload) => {
-            console.log('New environmental data:', payload)
             setEnvironmentalData(prev => [payload.new as EnvironmentalData, ...prev])
             
             // Show notification for critical events
