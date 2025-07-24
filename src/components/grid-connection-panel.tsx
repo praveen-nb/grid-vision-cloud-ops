@@ -16,11 +16,23 @@ import {
   Zap,
   Settings,
   Lock,
-  Globe
+  Globe,
+  Trash2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface GridConnection {
   id: string;
@@ -59,6 +71,7 @@ const GridConnectionPanel: React.FC = () => {
     protocol: '',
     apiKey: ''
   });
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Load connections from database
   useEffect(() => {
@@ -194,6 +207,38 @@ const GridConnectionPanel: React.FC = () => {
     }
   };
 
+  const handleDelete = async (connectionId: string, connectionName: string) => {
+    setDeletingId(connectionId);
+    
+    try {
+      const { error } = await supabase
+        .from('grid_connections')
+        .delete()
+        .eq('id', connectionId)
+        .eq('user_id', user?.id);
+
+      if (error) {
+        throw error;
+      }
+
+      setConnections(prev => prev.filter(conn => conn.id !== connectionId));
+      
+      toast({
+        title: "Grid Disconnected",
+        description: `Successfully removed ${connectionName}`,
+      });
+    } catch (error) {
+      console.error('Error deleting connection:', error);
+      toast({
+        title: "Delete Failed",
+        description: "Failed to remove grid connection. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'connected': return 'bg-green-500';
@@ -292,6 +337,41 @@ const GridConnectionPanel: React.FC = () => {
                               <Button variant="outline" size="sm">
                                 <Settings className="h-4 w-4" />
                               </Button>
+                              
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    disabled={deletingId === connection.id}
+                                    className="text-destructive hover:text-destructive"
+                                  >
+                                    {deletingId === connection.id ? (
+                                      <Activity className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <Trash2 className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Grid Connection</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{connection.name}"? This action cannot be undone and will remove all associated data.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      onClick={() => handleDelete(connection.id, connection.name)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                              
                               <div className="flex items-center gap-1 text-sm">
                                 {getStatusIcon(connection.status)}
                               </div>

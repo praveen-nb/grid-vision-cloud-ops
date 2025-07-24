@@ -8,9 +8,11 @@ import { GISCopilot } from "../gis-copilot"
 interface DashboardTabsProps {
   selectedConnection: any
   onCreateConnection: () => void
+  onDeleteConnection?: (connectionId: string) => void
+  connections?: any[]
 }
 
-export function DashboardTabs({ selectedConnection, onCreateConnection }: DashboardTabsProps) {
+export function DashboardTabs({ selectedConnection, onCreateConnection, onDeleteConnection, connections }: DashboardTabsProps) {
   return (
     <Tabs defaultValue="grid-dashboard" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
@@ -28,7 +30,11 @@ export function DashboardTabs({ selectedConnection, onCreateConnection }: Dashbo
 
       <TabsContent value="grid-dashboard" className="space-y-6">
         {selectedConnection ? (
-          <GridSpecificDashboard connection={selectedConnection} />
+          <GridSpecificDashboard 
+            connection={selectedConnection} 
+            onDeleteConnection={onDeleteConnection}
+            connections={connections}
+          />
         ) : (
           <Card>
             <CardHeader className="text-center">

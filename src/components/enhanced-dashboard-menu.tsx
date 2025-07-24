@@ -74,17 +74,17 @@ export function EnhancedDashboardMenu() {
 
   const createNewConnection = async () => {
     try {
-    const newConnection = {
-      name: `Grid Connection ${connections.length + 1}`,
-      type: 'Distribution',
-      location: 'New Location',
-      endpoint: 'http://localhost:8080',
-      protocol: 'HTTP',
-      status: 'disconnected',
-      voltage: 12000,
-      frequency: 60,
-      user_id: user?.id
-    }
+      const newConnection = {
+        name: `Grid Connection ${connections.length + 1}`,
+        type: 'Distribution',
+        location: 'New Location',
+        endpoint: 'http://localhost:8080',
+        protocol: 'HTTP',
+        status: 'disconnected',
+        voltage: 12000,
+        frequency: 60,
+        user_id: user?.id
+      }
 
       const { data, error } = await supabase
         .from('grid_connections')
@@ -104,6 +104,32 @@ export function EnhancedDashboardMenu() {
     } catch (error) {
       console.error('Error creating connection:', error)
       toast.error('Failed to create grid connection')
+    }
+  }
+
+  const deleteConnection = async (connectionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('grid_connections')
+        .delete()
+        .eq('id', connectionId)
+        .eq('user_id', user?.id)
+
+      if (error) throw error
+
+      setConnections(prev => prev.filter(conn => conn.id !== connectionId))
+      
+      // If deleted connection was selected, select first remaining or null
+      if (selectedConnection?.id === connectionId) {
+        const remaining = connections.filter(conn => conn.id !== connectionId)
+        setSelectedConnection(remaining.length > 0 ? remaining[0] : null)
+      }
+      
+      toast.success('Grid connection deleted')
+      loadDashboardStats()
+    } catch (error) {
+      console.error('Error deleting connection:', error)
+      toast.error('Failed to delete grid connection')
     }
   }
 
@@ -132,6 +158,8 @@ export function EnhancedDashboardMenu() {
       <DashboardTabs 
         selectedConnection={selectedConnection} 
         onCreateConnection={createNewConnection}
+        onDeleteConnection={deleteConnection}
+        connections={connections}
       />
 
       {selectedConnection && (

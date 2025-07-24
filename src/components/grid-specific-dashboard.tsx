@@ -17,8 +17,20 @@ import {
   Eye,
   MessageSquare,
   Camera,
-  Smartphone
+  Smartphone,
+  Trash2
 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
 import { GridMetricsChart } from "./dashboard/GridMetricsChart"
@@ -27,9 +39,11 @@ import { ErrorState, EmptyState } from "./ui/error-state"
 
 interface GridSpecificDashboardProps {
   connection: any
+  onDeleteConnection?: (connectionId: string) => void
+  connections?: any[]
 }
 
-export function GridSpecificDashboard({ connection }: GridSpecificDashboardProps) {
+export function GridSpecificDashboard({ connection, onDeleteConnection, connections }: GridSpecificDashboardProps) {
   const [metrics, setMetrics] = useState<any[]>([])
   const [alerts, setAlerts] = useState<any[]>([])
   const [predictions, setPredictions] = useState<any[]>([])
@@ -179,6 +193,33 @@ export function GridSpecificDashboard({ connection }: GridSpecificDashboardProps
             <Eye className="h-4 w-4 mr-2" />
             Process Env Data
           </Button>
+          {onDeleteConnection && connections && connections.length > 1 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="text-destructive hover:text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Grid
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Grid Connection</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to delete "{connection.name}"? This action cannot be undone and will remove all associated data including metrics, alerts, and field operations.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={() => onDeleteConnection(connection.id)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
 
