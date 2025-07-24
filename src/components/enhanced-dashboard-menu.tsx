@@ -184,6 +184,7 @@ export function EnhancedDashboardMenu() {
           setSelectedConnection(connection)
         }}
         onCreateConnection={() => createNewConnection()}
+        onDeleteConnection={deleteConnection}
       />
 
       <SystemOverviewCards stats={dashboardStats} loading={loading} />
