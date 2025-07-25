@@ -1,7 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
-import { Activity, Zap, Shield, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Activity, Zap, Shield, TrendingUp, AlertTriangle, CheckCircle, Power, PowerOff, MapPin } from 'lucide-react'
+import { useGridConnections } from '@/hooks/useGridConnections'
+import { toast } from '@/hooks/use-toast'
 
 const gridData = [
   { time: '00:00', voltage: 245, current: 120, temperature: 75 },
@@ -33,6 +36,76 @@ const kinesisMetrics = [
 ]
 
 export function RealTimeDashboard() {
+  const { connections, stats, loading, updateConnection } = useGridConnections();
+
+  const handleConnect = async (connectionId: string, connectionName: string) => {
+    try {
+      await updateConnection(connectionId, { 
+        status: 'connected',
+        last_update: new Date().toISOString()
+      });
+      toast({
+        title: "Connected",
+        description: `${connectionName} has been connected successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Connection Failed",
+        description: `Failed to connect ${connectionName}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDisconnect = async (connectionId: string, connectionName: string) => {
+    try {
+      await updateConnection(connectionId, { 
+        status: 'disconnected',
+        last_update: new Date().toISOString()
+      });
+      toast({
+        title: "Disconnected",
+        description: `${connectionName} has been disconnected`,
+      });
+    } catch (error) {
+      toast({
+        title: "Disconnection Failed",
+        description: `Failed to disconnect ${connectionName}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'connected':
+        return 'default';
+      case 'disconnected':
+        return 'secondary';
+      case 'error':
+        return 'destructive';
+      case 'maintenance':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'connected':
+        return 'text-utility-success';
+      case 'disconnected':
+        return 'text-muted-foreground';
+      case 'error':
+        return 'text-utility-danger';
+      case 'maintenance':
+        return 'text-utility-warning';
+      default:
+        return 'text-muted-foreground';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Status Cards */}
@@ -89,6 +162,96 @@ export function RealTimeDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Substations Control Panel */}
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Power className="h-5 w-5 text-primary" />
+            Substations Control
+          </CardTitle>
+          <CardDescription>
+            Manage connection status for all substations. Connected: {stats.connected}, Disconnected: {stats.disconnected}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="text-sm text-muted-foreground mt-2">Loading substations...</p>
+            </div>
+          ) : connections.length === 0 ? (
+            <div className="text-center py-8">
+              <Power className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg font-medium">No Substations Available</p>
+              <p className="text-sm text-muted-foreground">Add substations to monitor and control them here</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {connections.map((connection) => (
+                <div key={connection.id} className="border rounded-lg p-4 space-y-3 bg-gradient-subtle">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <h4 className="font-medium">{connection.name}</h4>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {connection.location}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {connection.type} • {connection.protocol}
+                      </div>
+                    </div>
+                    <Badge variant={getStatusBadgeVariant(connection.status)} className="capitalize">
+                      {connection.status}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {connection.voltage && (
+                      <div>
+                        <span className="text-muted-foreground">Voltage:</span>
+                        <span className="font-medium ml-1">{connection.voltage}V</span>
+                      </div>
+                    )}
+                    {connection.frequency && (
+                      <div>
+                        <span className="text-muted-foreground">Frequency:</span>
+                        <span className="font-medium ml-1">{connection.frequency}Hz</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleConnect(connection.id, connection.name)}
+                      disabled={connection.status === 'connected'}
+                      className="flex-1"
+                    >
+                      <Power className="h-3 w-3 mr-1" />
+                      Connect
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => handleDisconnect(connection.id, connection.name)}
+                      disabled={connection.status === 'disconnected'}
+                      className="flex-1"
+                    >
+                      <PowerOff className="h-3 w-3 mr-1" />
+                      Disconnect
+                    </Button>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground">
+                    Last update: {new Date(connection.last_update).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
