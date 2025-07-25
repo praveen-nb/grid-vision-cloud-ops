@@ -18,7 +18,9 @@ import {
   MessageSquare,
   Camera,
   Smartphone,
-  Trash2
+  Trash2,
+  Power,
+  PowerOff
 } from "lucide-react"
 import {
   AlertDialog,
@@ -164,6 +166,46 @@ export function GridSpecificDashboard({ connection, onDeleteConnection, connecti
     }
   }
 
+  const handleConnect = async () => {
+    try {
+      const { error } = await supabase
+        .from('grid_connections')
+        .update({ 
+          status: 'connected',
+          last_update: new Date().toISOString()
+        })
+        .eq('id', connection.id);
+
+      if (error) throw error;
+      
+      toast.success(`${connection.name} connected successfully`);
+      loadDashboardData();
+    } catch (error) {
+      console.error('Error connecting:', error);
+      toast.error('Failed to connect to grid');
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      const { error } = await supabase
+        .from('grid_connections')
+        .update({ 
+          status: 'disconnected',
+          last_update: new Date().toISOString()
+        })
+        .eq('id', connection.id);
+
+      if (error) throw error;
+      
+      toast.success(`${connection.name} disconnected`);
+      loadDashboardData();
+    } catch (error) {
+      console.error('Error disconnecting:', error);
+      toast.error('Failed to disconnect from grid');
+    }
+  };
+
   if (loading) {
     return <LoadingSkeleton variant="dashboard" />
   }
@@ -185,6 +227,22 @@ export function GridSpecificDashboard({ connection, onDeleteConnection, connecti
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            onClick={handleConnect}
+            disabled={connection.status === 'connected'}
+            variant={connection.status === 'connected' ? 'secondary' : 'default'}
+          >
+            <Power className="h-4 w-4 mr-2" />
+            Connect
+          </Button>
+          <Button 
+            onClick={handleDisconnect}
+            disabled={connection.status === 'disconnected'}
+            variant="outline"
+          >
+            <PowerOff className="h-4 w-4 mr-2" />
+            Disconnect
+          </Button>
           <Button onClick={runPredictiveAnalysis} variant="outline">
             <TrendingUp className="h-4 w-4 mr-2" />
             Run Analysis
