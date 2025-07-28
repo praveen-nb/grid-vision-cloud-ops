@@ -16,6 +16,7 @@ import AWSInfrastructure from "./pages/AWSInfrastructure";
 import Phase3Advanced from "./pages/Phase3Advanced";
 import Phase4Enterprise from "./pages/Phase4Enterprise";
 import SageMakerDashboardPage from "./pages/SageMakerDashboard";
+import PerformanceMetricsPage from "./pages/PerformanceMetrics";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/phase3-advanced" element={<AuthGuard><Phase3Advanced /></AuthGuard>} />
               <Route path="/phase4-enterprise" element={<AuthGuard><Phase4Enterprise /></AuthGuard>} />
               <Route path="/sagemaker" element={<AuthGuard><SageMakerDashboardPage /></AuthGuard>} />
+              <Route path="/performance-metrics" element={<AuthGuard><PerformanceMetricsPage /></AuthGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
