@@ -1,0 +1,220 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template for Utility GIS Infrastructure Modernization'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: 'utility-gis-modernization'
+    Description: 'Name of the project for resource naming'
+  
+  Environment:
+    Type: String
+    Default: 'production'
+    AllowedValues: ['development', 'staging', 'production']
+    Description: 'Environment for deployment'
+
+Resources:
+  # VPC for Utility Infrastructure
+  UtilityVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-vpc'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Private Subnets for SCADA Systems
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref UtilityVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-private-subnet-a'
+
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref UtilityVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-private-subnet-b'
+
+  # IoT Core for Smart Grid Devices
+  IoTThingType:
+    Type: AWS::IoT::ThingType
+    Properties:
+      ThingTypeName: !Sub '${ProjectName}-grid-sensor'
+      ThingTypeDescription: 'Smart grid sensor devices'
+
+  # Kinesis Data Stream for Real-time Telemetry
+  GridTelemetryStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Sub '${ProjectName}-grid-telemetry'
+      ShardCount: 10
+      StreamModeDetails:
+        StreamMode: ON_DEMAND
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # DynamoDB for Time-series Data
+  GridMetricsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ProjectName}-grid-metrics'
+      BillingMode: ON_DEMAND
+      AttributeDefinitions:
+        - AttributeName: device_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: device_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # S3 Bucket for GIS Data Storage
+  GISDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-${Environment}-gis-data'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # Lambda Function for Data Processing
+  GridDataProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-grid-data-processor'
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import base64
+          from datetime import datetime
+          
+          def lambda_handler(event, context):
+              # Process incoming grid telemetry data
+              dynamodb = boto3.resource('dynamodb')
+              table = dynamodb.Table('utility-gis-modernization-grid-metrics')
+              
+              for record in event['Records']:
+                  # Decode Kinesis data
+                  payload = base64.b64decode(record['kinesis']['data'])
+                  data = json.loads(payload)
+                  
+                  # Store in DynamoDB
+                  table.put_item(
+                      Item={
+                          'device_id': data['device_id'],
+                          'timestamp': int(data['timestamp']),
+                          'voltage': data['voltage'],
+                          'current': data['current'],
+                          'power_factor': data['power_factor'],
+                          'ttl': int(datetime.now().timestamp()) + (30 * 24 * 60 * 60)  # 30 days
+                      }
+                  )
+              
+              return {'statusCode': 200}
+
+  # IAM Role for Lambda
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                Resource: !GetAtt GridMetricsTable.Arn
+
+  # CloudWatch Dashboard
+  UtilityDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub '${ProjectName}-${Environment}-operations'
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  ["AWS/Kinesis", "IncomingRecords", "StreamName", "${GridTelemetryStream}"],
+                  ["AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", "${GridMetricsTable}"],
+                  ["AWS/Lambda", "Invocations", "FunctionName", "${GridDataProcessor}"]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "title": "Utility Grid Metrics"
+              }
+            }
+          ]
+        }
+
+Outputs:
+  VPCId:
+    Description: 'VPC ID for utility infrastructure'
+    Value: !Ref UtilityVPC
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-vpc-id'
+  
+  KinesisStreamName:
+    Description: 'Kinesis stream for grid telemetry'
+    Value: !Ref GridTelemetryStream
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-kinesis-stream'
+  
+  DynamoDBTableName:
+    Description: 'DynamoDB table for grid metrics'
+    Value: !Ref GridMetricsTable
+    Export:
+      Name: !Sub '${ProjectName}-${Environment}-dynamodb-table'
