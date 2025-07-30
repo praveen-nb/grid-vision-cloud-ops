@@ -29,7 +29,15 @@ import {
   Medal,
   BadgeCheck,
   UserCheck,
-  Handshake
+  Handshake,
+  Github,
+  Code,
+  GitFork,
+  Eye,
+  Play,
+  Settings,
+  Workflow,
+  MonitorCheck
 } from 'lucide-react';
 
 const EvidenceItem = ({ icon: Icon, title, description, priority, examples, isChecked, onCheck }) => (
@@ -110,6 +118,129 @@ const CriteriaSection = ({ title, icon: Icon, description, evidence }) => {
 
 export function Eb2NiwEvidenceChecklist() {
   const [activeTab, setActiveTab] = useState("exceptional-ability");
+
+  const githubPortfolioEvidence = [
+    {
+      icon: Cloud,
+      title: "Infrastructure as Code (IaC) Scripts",
+      description: "CloudFormation/Terraform scripts demonstrating advanced AWS infrastructure automation",
+      priority: "Critical",
+      examples: [
+        "Terraform modules for multi-tier AWS utility infrastructure",
+        "CloudFormation templates for NERC-CIP compliant environments",
+        "Infrastructure automation scripts showing complexity and scale",
+        "Version-controlled IaC with proper documentation and examples"
+      ]
+    },
+    {
+      icon: Code,
+      title: "Architecture Diagrams & Documentation",
+      description: "Visual documentation of complex AWS GIS system architectures",
+      priority: "Critical",
+      examples: [
+        "Comprehensive README with system architecture diagrams",
+        "Technical documentation in docs/ folder explaining design decisions",
+        "Network topology diagrams showing multi-AZ deployments",
+        "Data flow diagrams for real-time processing pipelines"
+      ]
+    },
+    {
+      icon: Database,
+      title: "SageMaker ML Training Implementation",
+      description: "Machine learning notebooks and training pipelines for utility applications",
+      priority: "High",
+      examples: [
+        "Jupyter notebooks (.ipynb) with ML model training code",
+        "SageMaker pipeline configurations for automated training",
+        "Model training logs and performance metrics",
+        "ML inference endpoints for real-time grid monitoring"
+      ]
+    },
+    {
+      icon: Settings,
+      title: "SCADA/OMS/GIS Integration Code",
+      description: "API connectors and integration code for utility operational systems",
+      priority: "High",
+      examples: [
+        "REST API connectors for SCADA system integration",
+        "Real-time data ingestion from OMS (Outage Management Systems)",
+        "GIS data transformation and mapping utilities",
+        "Protocol adapters for DNP3, IEC 61850, or Modbus communications"
+      ]
+    },
+    {
+      icon: MonitorCheck,
+      title: "Dashboard & UI Source Code",
+      description: "Real-time monitoring dashboards and user interfaces for utility operations",
+      priority: "High",
+      examples: [
+        "React/Angular dashboard components with real-time data visualization",
+        "Responsive UI designs for utility control room environments",
+        "Interactive maps and grid topology visualization components",
+        "Real-time alerting and notification systems"
+      ]
+    },
+    {
+      icon: Github,
+      title: "GitHub Repository Metrics & Community",
+      description: "Evidence of community recognition and project adoption",
+      priority: "Medium",
+      examples: [
+        "Repository with significant stars (50+ for niche utility software)",
+        "Active forks indicating adoption by other developers/organizations",
+        "Comprehensive README with clear project description and use cases",
+        "Issue tracking and community contributions demonstrating impact"
+      ]
+    },
+    {
+      icon: Play,
+      title: "Tutorials & Demo Walkthroughs",
+      description: "Educational content demonstrating technical expertise and knowledge sharing",
+      priority: "Medium",
+      examples: [
+        "Video demonstrations of system capabilities and setup",
+        "Step-by-step markdown tutorials for complex integrations",
+        "Live demo environments or sandbox implementations",
+        "Conference presentation materials and technical talks"
+      ]
+    },
+    {
+      icon: Database,
+      title: "Real-time Data Pipeline Implementation",
+      description: "Code for high-volume, real-time data processing using AWS services",
+      priority: "High",
+      examples: [
+        "Kinesis Data Streams configuration for utility telemetry",
+        "IoT Core device management and data routing rules",
+        "Lambda functions for real-time data transformation",
+        "DynamoDB or RDS configurations for time-series data storage"
+      ]
+    },
+    {
+      icon: Lock,
+      title: "Compliance & Security Audit Scripts",
+      description: "Automated compliance checking and security monitoring implementations",
+      priority: "High",
+      examples: [
+        "AWS Security Hub custom rules for utility compliance",
+        "IAM policy templates following least-privilege principles",
+        "CloudTrail analysis scripts for audit trail monitoring",
+        "Config rules for NERC-CIP compliance validation"
+      ]
+    },
+    {
+      icon: Workflow,
+      title: "CI/CD Pipeline & Deployment Automation",
+      description: "Production-ready deployment pipelines demonstrating DevOps maturity",
+      priority: "Medium",
+      examples: [
+        "GitHub Actions workflows in .github/workflows/ directory",
+        "Multi-environment deployment strategies (dev/staging/prod)",
+        "Automated testing and security scanning in pipelines",
+        "Infrastructure deployment logs showing successful production releases"
+      ]
+    }
+  ];
 
   const exceptionalAbilityEvidence = [
     {
@@ -426,11 +557,12 @@ export function Eb2NiwEvidenceChecklist() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="exceptional-ability">Exceptional Ability</TabsTrigger>
           <TabsTrigger value="substantial-merit">Substantial Merit</TabsTrigger>
           <TabsTrigger value="national-importance">National Importance</TabsTrigger>
           <TabsTrigger value="well-positioned">Well-Positioned</TabsTrigger>
+          <TabsTrigger value="github-portfolio">GitHub Portfolio</TabsTrigger>
         </TabsList>
 
         <TabsContent value="exceptional-ability">
@@ -466,6 +598,15 @@ export function Eb2NiwEvidenceChecklist() {
             icon={TrendingUp}
             description="Proof that you are well-positioned to advance the proposed endeavor"
             evidence={wellPositionedEvidence}
+          />
+        </TabsContent>
+
+        <TabsContent value="github-portfolio">
+          <CriteriaSection
+            title="GitHub Portfolio Evidence"
+            icon={Github}
+            description="Technical portfolio demonstrating your AWS GIS infrastructure expertise through code"
+            evidence={githubPortfolioEvidence}
           />
         </TabsContent>
       </Tabs>
