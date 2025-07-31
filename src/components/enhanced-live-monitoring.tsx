@@ -18,11 +18,13 @@ import {
   WifiOff,
   Server,
   Eye,
-  EyeOff
+  EyeOff,
+  Database
 } from 'lucide-react';
 import { useRealTimeMetrics } from '@/hooks/useRealTimeMetrics';
 import { useGridConnections } from '@/hooks/useGridConnections';
 import { useSecurityMonitoring } from '@/hooks/useSecurityMonitoring';
+import { useDataSimulator } from '@/hooks/useDataSimulator';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { EnhancedMonitoringRecommendations } from './enhanced-monitoring-recommendations';
 import { SubstationManagement } from './substation-management';
@@ -94,6 +96,7 @@ export function EnhancedLiveMonitoring() {
     metrics: securityMetrics, 
     loading: securityLoading 
   } = useSecurityMonitoring();
+  const { startSimulation, startAutoSimulation, isSimulating } = useDataSimulator();
 
   // Auto-select first connection if none selected
   useEffect(() => {
@@ -101,6 +104,13 @@ export function EnhancedLiveMonitoring() {
       setSelectedConnectionId(connections[0].id);
     }
   }, [connections, selectedConnectionId]);
+
+  // Start automatic data simulation
+  useEffect(() => {
+    if (connections.length > 0 && autoRefresh) {
+      return startAutoSimulation();
+    }
+  }, [connections.length, autoRefresh, startAutoSimulation]);
 
   // Process metrics for charts
   const processedMetrics = React.useMemo(() => {
@@ -183,6 +193,15 @@ export function EnhancedLiveMonitoring() {
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
             Auto Refresh
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={startSimulation}
+            disabled={isSimulating}
+          >
+            <Database className={`h-4 w-4 mr-2 ${isSimulating ? 'animate-pulse' : ''}`} />
+            {isSimulating ? 'Generating...' : 'Generate Data'}
           </Button>
         </div>
       </div>
