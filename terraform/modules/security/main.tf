@@ -1,54 +1,106 @@
-# Security Group for EC2 instances
+# Zero Trust Security Group for EC2 instances
 resource "aws_security_group" "ec2" {
   name        = "${var.project_name}-${var.environment}-ec2-sg"
-  description = "Security group for EC2 instances"
+  description = "Zero Trust security group for EC2 instances"
   vpc_id      = var.vpc_id
 
-  # HTTP
+  # HTTPS only from ALB
   ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    description     = "HTTPS from ALB only"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
-  # HTTPS
+  # Application port from ALB only
   ingress {
-    description = "HTTPS"
+    description     = "Application from ALB"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  # SSH from bastion only (if bastion exists)
+  dynamic "ingress" {
+    for_each = var.enable_bastion ? [1] : []
+    content {
+      description     = "SSH from bastion only"
+      from_port       = 22
+      to_port         = 22
+      protocol        = "tcp"
+      security_groups = [aws_security_group.bastion[0].id]
+    }
+  }
+
+  # Egress restricted to VPC endpoints and specific destinations
+  egress {
+    description = "HTTPS to VPC endpoints"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
   }
 
-  # SSH
+  egress {
+    description = "DNS"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    description = "DNS"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-ec2-sg"
+    ZeroTrust = "enabled"
+  }
+}
+
+# Bastion Host Security Group (optional)
+resource "aws_security_group" "bastion" {
+  count = var.enable_bastion ? 1 : 0
+
+  name        = "${var.project_name}-${var.environment}-bastion-sg"
+  description = "Zero Trust security group for bastion host"
+  vpc_id      = var.vpc_id
+
+  # SSH from specific IP ranges only
   ingress {
-    description = "SSH"
+    description = "SSH from admin networks"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.admin_cidr_blocks
+  }
+
+  egress {
+    description = "SSH to private instances"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
   }
 
-  # Custom application port
-  ingress {
-    description = "Application"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
-  }
-
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-ec2-sg"
+    Name = "${var.project_name}-${var.environment}-bastion-sg"
+    ZeroTrust = "enabled"
   }
 }
 
@@ -115,39 +167,58 @@ resource "aws_security_group" "sagemaker" {
   }
 }
 
-# Security Group for Load Balancer
+# Zero Trust Security Group for Load Balancer
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-${var.environment}-alb-sg"
-  description = "Security group for Application Load Balancer"
+  description = "Zero Trust security group for Application Load Balancer"
   vpc_id      = var.vpc_id
 
-  # HTTP
+  # HTTPS only from CloudFront
   ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # HTTPS
-  ingress {
-    description = "HTTPS"
+    description = "HTTPS from CloudFront"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.cloudfront_cidr_blocks
+  }
+
+  # HTTP redirect to HTTPS
+  ingress {
+    description = "HTTP for redirect"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = var.cloudfront_cidr_blocks
+  }
+
+  # Health check from trusted networks
+  ingress {
+    description = "Health check"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "To backend instances"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    description = "To backend instances"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   tags = {
     Name = "${var.project_name}-${var.environment}-alb-sg"
+    ZeroTrust = "enabled"
   }
 }
 

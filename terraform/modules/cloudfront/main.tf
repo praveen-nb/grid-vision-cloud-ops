@@ -45,25 +45,145 @@ resource "aws_cloudfront_origin_access_control" "main" {
   signing_protocol                  = "sigv4"
 }
 
+# Lambda@Edge function for Zero Trust session validation
+resource "aws_lambda_function" "session_validator" {
+  filename         = "session_validator.zip"
+  function_name    = "${var.project_name}-${var.environment}-session-validator"
+  role            = aws_iam_role.lambda_edge_role.arn
+  handler         = "index.handler"
+  runtime         = "nodejs18.x"
+  timeout         = 5
+
+  depends_on = [data.archive_file.session_validator]
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-session-validator"
+  }
+}
+
+# Archive for Lambda@Edge function
+data "archive_file" "session_validator" {
+  type        = "zip"
+  output_path = "session_validator.zip"
+  source {
+    content = <<EOF
+exports.handler = async (event) => {
+    const request = event.Records[0].cf.request;
+    const headers = request.headers;
+    
+    // Skip validation for static assets
+    if (request.uri.match(/\.(js|css|png|jpg|gif|ico|svg|woff|woff2|ttf)$/)) {
+        return request;
+    }
+    
+    // Check for session headers
+    const sessionToken = headers['authorization'] || headers['x-session-token'];
+    const userAgent = headers['user-agent'];
+    const sourceIp = event.Records[0].cf.config.requestId;
+    
+    // Basic session validation logic
+    if (!sessionToken) {
+        return {
+            status: '401',
+            statusDescription: 'Unauthorized',
+            headers: {
+                'content-type': [{
+                    key: 'Content-Type',
+                    value: 'application/json'
+                }],
+                'cache-control': [{
+                    key: 'Cache-Control',
+                    value: 'no-store'
+                }]
+            },
+            body: JSON.stringify({
+                error: 'Session required for access'
+            })
+        };
+    }
+    
+    // Add Zero Trust headers
+    request.headers['x-forwarded-for'] = [{
+        key: 'X-Forwarded-For',
+        value: sourceIp
+    }];
+    
+    request.headers['x-zero-trust-verified'] = [{
+        key: 'X-Zero-Trust-Verified',
+        value: 'true'
+    }];
+    
+    return request;
+};
+EOF
+    filename = "index.js"
+  }
+}
+
+# IAM Role for Lambda@Edge
+resource "aws_iam_role" "lambda_edge_role" {
+  name = "${var.project_name}-${var.environment}-lambda-edge-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = [
+            "lambda.amazonaws.com",
+            "edgelambda.amazonaws.com"
+          ]
+        }
+      }
+    ]
+  })
+}
+
+# IAM Policy for Lambda@Edge
+resource "aws_iam_role_policy_attachment" "lambda_edge_policy" {
+  role       = aws_iam_role.lambda_edge_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 # CloudFront Distribution
 resource "aws_cloudfront_distribution" "main" {
   origin {
     domain_name              = aws_s3_bucket.static_content.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
     origin_id                = "S3-${aws_s3_bucket.static_content.id}"
+
+    # Custom headers for Zero Trust
+    custom_header {
+      name  = "X-CloudFront-Origin"
+      value = "trusted-s3-origin"
+    }
   }
 
-  # API Gateway origin
+  # API Gateway origin with enhanced security
   origin {
     domain_name = replace(var.api_gateway_invoke_url, "/^https?://([^/]*).*/", "$1")
     origin_id   = "API-Gateway"
     origin_path = "/${var.api_gateway_stage_name}"
 
     custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+      http_port                = 80
+      https_port               = 443
+      origin_protocol_policy   = "https-only"
+      origin_ssl_protocols     = ["TLSv1.2", "TLSv1.3"]
+      origin_keepalive_timeout = 5
+      origin_read_timeout      = 30
+    }
+
+    custom_header {
+      name  = "X-CloudFront-Origin"
+      value = "trusted-api-origin"
+    }
+
+    custom_header {
+      name  = "X-Zero-Trust-Source"
+      value = "cloudfront-verified"
     }
   }
 
@@ -72,46 +192,49 @@ resource "aws_cloudfront_distribution" "main" {
   comment             = "${var.project_name} ${var.environment} distribution"
   default_root_object = "index.html"
 
-  # Static content cache behavior
+  # Static content cache behavior with session awareness
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "S3-${aws_s3_bucket.static_content.id}"
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    cache_policy_id        = aws_cloudfront_cache_policy.zero_trust_cache.id
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.zero_trust_origin.id
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
     compress               = true
+
+    # Zero Trust Lambda@Edge function
+    lambda_function_association {
+      event_type   = "viewer-request"
+      lambda_arn   = aws_lambda_function.session_validator.qualified_arn
+      include_body = false
+    }
+
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
   }
 
-  # API cache behavior
+  # API cache behavior with enhanced Zero Trust
   ordered_cache_behavior {
     path_pattern     = "/api/*"
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = "API-Gateway"
 
-    forwarded_values {
-      query_string = true
-      headers      = ["Authorization", "Content-Type"]
-      cookies {
-        forward = "none"
-      }
-    }
+    cache_policy_id          = aws_cloudfront_cache_policy.api_cache.id
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.api_origin.id
 
     viewer_protocol_policy = "https-only"
-    min_ttl                = 0
-    default_ttl            = 0
-    max_ttl                = 0
     compress               = true
+
+    # Enhanced session validation for API endpoints
+    lambda_function_association {
+      event_type   = "viewer-request"
+      lambda_arn   = aws_lambda_function.session_validator.qualified_arn
+      include_body = true
+    }
+
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
   }
 
   price_class = "PriceClass_100"

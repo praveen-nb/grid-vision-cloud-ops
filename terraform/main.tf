@@ -45,6 +45,23 @@ module "security" {
   environment  = var.environment
   vpc_id       = module.vpc.vpc_id
   vpc_cidr     = var.vpc_cidr
+  
+  enable_bastion      = var.enable_bastion
+  admin_cidr_blocks   = var.admin_cidr_blocks
+}
+
+# PrivateLink for Zero Trust external connectivity
+module "privatelink" {
+  source = "./modules/privatelink"
+  
+  project_name       = var.project_name
+  environment        = var.environment
+  vpc_id             = module.vpc.vpc_id
+  vpc_cidr           = var.vpc_cidr
+  private_subnet_ids = module.vpc.private_subnet_ids
+  
+  partner_services     = var.partner_services
+  allowed_cidr_blocks  = var.privatelink_allowed_cidrs
 }
 
 # IoT Core and Device Management

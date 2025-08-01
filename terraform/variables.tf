@@ -200,3 +200,31 @@ variable "enable_waf" {
   type        = bool
   default     = true
 }
+
+# Zero Trust Architecture Configuration
+variable "enable_bastion" {
+  description = "Enable bastion host for SSH access in Zero Trust architecture"
+  type        = bool
+  default     = false
+}
+
+variable "admin_cidr_blocks" {
+  description = "CIDR blocks for administrative access (restrict to known IP ranges)"
+  type        = list(string)
+  default     = []
+}
+
+variable "partner_services" {
+  description = "External partner services to connect via PrivateLink"
+  type = list(object({
+    service_name = string
+    resource_arn = string
+  }))
+  default = []
+}
+
+variable "privatelink_allowed_cidrs" {
+  description = "CIDR blocks allowed to access PrivateLink endpoints"
+  type        = list(string)
+  default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+}
