@@ -252,16 +252,6 @@ export function PerformanceMetricsShowcase() {
             </div>
           </div>
           
-          <div className="prose max-w-none text-sm">
-            <h4 className="font-semibold">Key Achievements for EB2-NIW Consideration:</h4>
-            <ul className="space-y-1">
-              <li>• Modernized critical electrical infrastructure serving millions of customers</li>
-              <li>• Implemented predictive analytics reducing grid failures by 96.3%</li>
-              <li>• Established scalable AWS architecture supporting 500+ concurrent operators</li>
-              <li>• Achieved 99.9% system reliability for critical utility operations</li>
-              <li>• Delivered $1.3M annual cost savings through automation and optimization</li>
-            </ul>
-          </div>
         </CardContent>
       </Card>
     </div>
