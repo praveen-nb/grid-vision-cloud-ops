@@ -121,8 +121,7 @@ export function PerformanceMetricsShowcase() {
         <p className="text-muted-foreground">
           Quantifiable improvements demonstrating national impact and technical excellence
         </p>
-        <div className="flex justify-center gap-2">
-          <Badge variant="secondary">EB2-NIW Evidence</Badge>
+        <div className="flex justify-center">
           <Badge variant="outline">Electrical Utilities Modernization</Badge>
         </div>
       </div>
