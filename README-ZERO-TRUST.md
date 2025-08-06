@@ -4,7 +4,7 @@
 
 This repository implements a comprehensive Zero Trust Architecture (ZTA) for AWS-based utility grid management systems, following NIST SP 800-207 guidelines.
 
-## 🔒 What is Zero Trust?
+##What is Zero Trust?
 
 Zero Trust is a security paradigm that assumes no trust by default. Every user, device, and network flow is verified before granting access to systems and data.
 
@@ -13,7 +13,7 @@ Zero Trust is a security paradigm that assumes no trust by default. Every user, 
 - **Least Privilege Access**: Grant minimal necessary permissions
 - **Assume Breach**: Design for when (not if) breaches occur
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```mermaid
 graph TB
@@ -59,38 +59,37 @@ graph TB
     WAF --> SH
 ```
 
-## 🚀 Implementation Features
+## Implementation Features
 
-### ✅ Network Security
+### Network Security
 - **VPC Endpoints**: All AWS service traffic stays within AWS backbone
 - **Security Groups**: Microsegmentation with least privilege
 - **NACLs**: Additional layer of network filtering
 - **VPC Flow Logs**: Complete network traffic visibility
 
-### ✅ CloudFront with Zero Trust
+### CloudFront with Zero Trust
 - **Session-Aware Edge**: Lambda@Edge functions validate sessions
 - **Security Headers**: Comprehensive HTTP security headers
 - **Origin Access Control**: S3 and API Gateway protection
 - **WAF Integration**: Advanced threat protection
 
-### ✅ PrivateLink Connectivity
+### PrivateLink Connectivity
 - **Secure External Access**: No internet exposure for partner integrations
 - **DNS Resolution**: Private DNS for internal services
 - **Traffic Monitoring**: Complete visibility into external connections
 
-### ✅ Identity & Access Management
+### Identity & Access Management
 - **Fine-grained Permissions**: Resource-level access control
 - **Multi-factor Authentication**: Required for all access
 - **Session Management**: Continuous session validation
 - **Certificate-based Auth**: mTLS for service-to-service communication
-
-### ✅ Monitoring & Compliance
+### Monitoring & Compliance
 - **Comprehensive Logging**: All activities tracked and monitored
 - **Real-time Alerting**: Immediate notification of security events
 - **Automated Compliance**: Continuous compliance validation
 - **Audit Trails**: Complete forensic capabilities
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 terraform/
@@ -111,7 +110,7 @@ supabase/
 └── functions/                 # Edge functions for security
 ```
 
-## 🛠️ Quick Deployment
+##  Quick Deployment
 
 ### Prerequisites
 - AWS CLI configured with appropriate permissions
@@ -228,7 +227,7 @@ Monitoring Stack:
 └── Automated Alerts → SNS
 ```
 
-## 📊 Monitoring Dashboard
+## Monitoring Dashboard
 
 Access your security dashboard at:
 - **CloudWatch**: Real-time metrics and logs
@@ -242,7 +241,7 @@ Key metrics to monitor:
 - Policy violations
 - Service health status
 
-## 🚨 Security Alerts
+##  Security Alerts
 
 Automated alerts are configured for:
 - Authentication failures (>5 in 5 minutes)
@@ -251,7 +250,7 @@ Automated alerts are configured for:
 - Service outages
 - Compliance drift
 
-## 🔄 Maintenance
+##  Maintenance
 
 ### Regular Tasks
 - **Weekly**: Review security alerts and logs
@@ -279,7 +278,7 @@ terraform apply
 - [AWS Zero Trust on AWS](https://aws.amazon.com/security/zero-trust/)
 - [NERC CIP Compliance Guide](docs/ARCHITECTURE.md)
 
-## 🆘 Support
+## Support
 
 For security incidents or questions:
 1. Review logs in CloudWatch and Security Hub
@@ -287,10 +286,9 @@ For security incidents or questions:
 3. Contact your security team
 4. For emergencies, use break-glass procedures
 
-## 📄 License
+## License
 
 This implementation is provided under the MIT License. See LICENSE file for details.
 
 ---
-
-**⚠️ Security Notice**: This Zero Trust implementation provides enterprise-grade security for critical infrastructure. Regular updates and monitoring are essential for maintaining security effectiveness.
+**Security Notice**: This Zero Trust implementation provides enterprise-grade security for critical infrastructure. Regular updates and monitoring are essential for maintaining security effectiveness.
