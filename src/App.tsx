@@ -17,6 +17,7 @@ import Phase3Advanced from "./pages/Phase3Advanced";
 import Phase4Enterprise from "./pages/Phase4Enterprise";
 import SageMakerDashboardPage from "./pages/SageMakerDashboard";
 import PerformanceMetricsPage from "./pages/PerformanceMetrics";
+import DisasterRecoveryPage from "./pages/DisasterRecovery";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/compliance" element={<AuthGuard><Compliance /></AuthGuard>} />
               <Route path="/live-monitoring" element={<AuthGuard><LiveMonitoring /></AuthGuard>} />
               <Route path="/aws-infrastructure" element={<AuthGuard><AWSInfrastructure /></AuthGuard>} />
+              <Route path="/disaster-recovery" element={<AuthGuard><DisasterRecoveryPage /></AuthGuard>} />
               <Route path="/phase3-advanced" element={<AuthGuard><Phase3Advanced /></AuthGuard>} />
               <Route path="/phase4-enterprise" element={<AuthGuard><Phase4Enterprise /></AuthGuard>} />
               <Route path="/sagemaker" element={<AuthGuard><SageMakerDashboardPage /></AuthGuard>} />
