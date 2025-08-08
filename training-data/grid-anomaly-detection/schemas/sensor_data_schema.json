@@ -1,0 +1,406 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://utility.com/schemas/grid-anomaly-detection/sensor_data.json",
+  "title": "Grid Sensor Data Schema",
+  "description": "Schema for electrical grid sensor data used in anomaly detection models",
+  "type": "object",
+  "version": "2.1.0",
+  "lastModified": "2024-08-08",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the measurement in UTC",
+      "examples": ["2024-08-08T14:30:00.000Z"]
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^GRID-[A-Z0-9]{8}$",
+      "description": "Unique grid device identifier following naming convention",
+      "examples": ["GRID-A1B2C3D4", "GRID-X9Y8Z7W6"]
+    },
+    "device_type": {
+      "type": "string",
+      "enum": ["transformer", "breaker", "relay", "capacitor_bank", "voltage_regulator", "switch"],
+      "description": "Type of electrical equipment being monitored"
+    },
+    "measurements": {
+      "type": "object",
+      "description": "Core electrical measurements from the device",
+      "properties": {
+        "voltage": {
+          "type": "object",
+          "description": "Voltage measurements in volts",
+          "properties": {
+            "phase_a": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50000,
+              "description": "Phase A voltage in volts"
+            },
+            "phase_b": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50000,
+              "description": "Phase B voltage in volts"
+            },
+            "phase_c": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50000,
+              "description": "Phase C voltage in volts"
+            },
+            "neutral": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000,
+              "description": "Neutral voltage in volts"
+            }
+          },
+          "required": ["phase_a", "phase_b", "phase_c"],
+          "additionalProperties": false
+        },
+        "current": {
+          "type": "object",
+          "description": "Current measurements in amperes",
+          "properties": {
+            "phase_a": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50000,
+              "description": "Phase A current in amperes"
+            },
+            "phase_b": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50000,
+              "description": "Phase B current in amperes"
+            },
+            "phase_c": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 50000,
+              "description": "Phase C current in amperes"
+            },
+            "neutral": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Neutral current in amperes"
+            }
+          },
+          "required": ["phase_a", "phase_b", "phase_c"],
+          "additionalProperties": false
+        },
+        "power": {
+          "type": "object",
+          "description": "Power measurements in watts and vars",
+          "properties": {
+            "active_power": {
+              "type": "number",
+              "description": "Active power in watts"
+            },
+            "reactive_power": {
+              "type": "number",
+              "description": "Reactive power in vars"
+            },
+            "apparent_power": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Apparent power in VA"
+            },
+            "power_factor": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1,
+              "description": "Power factor (dimensionless)"
+            }
+          },
+          "required": ["active_power", "reactive_power", "apparent_power"],
+          "additionalProperties": false
+        },
+        "frequency": {
+          "type": "number",
+          "minimum": 58.0,
+          "maximum": 62.0,
+          "description": "System frequency in Hz",
+          "default": 60.0
+        },
+        "temperature": {
+          "type": "object",
+          "description": "Temperature measurements in Celsius",
+          "properties": {
+            "ambient": {
+              "type": "number",
+              "minimum": -40,
+              "maximum": 60,
+              "description": "Ambient temperature in Celsius"
+            },
+            "equipment": {
+              "type": "number",
+              "minimum": -40,
+              "maximum": 200,
+              "description": "Equipment operating temperature in Celsius"
+            },
+            "oil_temperature": {
+              "type": "number",
+              "minimum": -40,
+              "maximum": 150,
+              "description": "Transformer oil temperature in Celsius (if applicable)"
+            }
+          },
+          "required": ["ambient"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["voltage", "current", "power", "frequency"],
+      "additionalProperties": false
+    },
+    "location": {
+      "type": "object",
+      "description": "Geographic and network location information",
+      "properties": {
+        "substation_id": {
+          "type": "string",
+          "pattern": "^SUB-[A-Z0-9]{6}$",
+          "description": "Unique substation identifier",
+          "examples": ["SUB-A1B2C3", "SUB-X9Y8Z7"]
+        },
+        "feeder_id": {
+          "type": "string",
+          "pattern": "^FDR-[A-Z0-9]{8}$",
+          "description": "Feeder circuit identifier",
+          "examples": ["FDR-A1B2C3D4"]
+        },
+        "coordinates": {
+          "type": "object",
+          "description": "GPS coordinates (anonymized to substation level)",
+          "properties": {
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Latitude in decimal degrees"
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Longitude in decimal degrees"
+            },
+            "elevation": {
+              "type": "number",
+              "description": "Elevation above sea level in meters"
+            }
+          },
+          "required": ["latitude", "longitude"],
+          "additionalProperties": false
+        },
+        "voltage_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "extra_high"],
+          "description": "Voltage classification level"
+        },
+        "network_zone": {
+          "type": "string",
+          "enum": ["generation", "transmission", "distribution", "customer"],
+          "description": "Network zone classification"
+        }
+      },
+      "required": ["substation_id", "voltage_level", "network_zone"],
+      "additionalProperties": false
+    },
+    "quality_indicators": {
+      "type": "object",
+      "description": "Data quality and sensor health indicators",
+      "properties": {
+        "data_quality_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall data quality score (0-1)"
+        },
+        "sensor_health": {
+          "type": "string",
+          "enum": ["healthy", "degraded", "faulty", "offline"],
+          "description": "Current sensor health status"
+        },
+        "calibration_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Last calibration date in ISO 8601 format"
+        },
+        "accuracy_class": {
+          "type": "string",
+          "enum": ["0.1", "0.2", "0.5", "1.0", "3.0"],
+          "description": "Instrument accuracy class"
+        },
+        "communication_status": {
+          "type": "string",
+          "enum": ["good", "intermittent", "poor", "failed"],
+          "description": "Communication link quality"
+        },
+        "missing_values": {
+          "type": "object",
+          "description": "Count of missing values by measurement type",
+          "properties": {
+            "voltage_missing": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "current_missing": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "power_missing": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["data_quality_score", "sensor_health", "calibration_date"],
+      "additionalProperties": false
+    },
+    "operational_context": {
+      "type": "object",
+      "description": "Operational context and system state information",
+      "properties": {
+        "system_state": {
+          "type": "string",
+          "enum": ["normal", "emergency", "maintenance", "startup", "shutdown"],
+          "description": "Current operational state"
+        },
+        "load_level": {
+          "type": "string",
+          "enum": ["light", "normal", "heavy", "peak"],
+          "description": "Current load level classification"
+        },
+        "weather_conditions": {
+          "type": "string",
+          "enum": ["clear", "cloudy", "rain", "snow", "storm", "extreme_heat", "extreme_cold"],
+          "description": "Current weather conditions affecting operations"
+        },
+        "switching_operations": {
+          "type": "boolean",
+          "description": "Whether switching operations are in progress"
+        },
+        "protection_status": {
+          "type": "string",
+          "enum": ["normal", "alarm", "trip", "blocked"],
+          "description": "Protection system status"
+        }
+      },
+      "required": ["system_state", "load_level"],
+      "additionalProperties": false
+    },
+    "security_metadata": {
+      "type": "object",
+      "description": "Security and compliance metadata",
+      "properties": {
+        "data_classification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted"],
+          "description": "Data classification level for security purposes"
+        },
+        "nerc_cip_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "NERC CIP impact classification"
+        },
+        "encryption_status": {
+          "type": "string",
+          "enum": ["encrypted", "unencrypted"],
+          "description": "Data encryption status"
+        },
+        "audit_trail_id": {
+          "type": "string",
+          "description": "Unique identifier for audit trail tracking"
+        }
+      },
+      "required": ["data_classification", "nerc_cip_level", "encryption_status"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "timestamp",
+    "device_id",
+    "device_type",
+    "measurements",
+    "location",
+    "quality_indicators",
+    "operational_context",
+    "security_metadata"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "timestamp": "2024-08-08T14:30:00.000Z",
+      "device_id": "GRID-A1B2C3D4",
+      "device_type": "transformer",
+      "measurements": {
+        "voltage": {
+          "phase_a": 13800,
+          "phase_b": 13795,
+          "phase_c": 13802,
+          "neutral": 2.5
+        },
+        "current": {
+          "phase_a": 125.6,
+          "phase_b": 128.3,
+          "phase_c": 123.9,
+          "neutral": 1.2
+        },
+        "power": {
+          "active_power": 2450000,
+          "reactive_power": 340000,
+          "apparent_power": 2473000,
+          "power_factor": 0.991
+        },
+        "frequency": 60.02,
+        "temperature": {
+          "ambient": 25.6,
+          "equipment": 67.8,
+          "oil_temperature": 72.3
+        }
+      },
+      "location": {
+        "substation_id": "SUB-A1B2C3",
+        "feeder_id": "FDR-A1B2C3D4",
+        "coordinates": {
+          "latitude": 40.7128,
+          "longitude": -74.0060,
+          "elevation": 10.2
+        },
+        "voltage_level": "medium",
+        "network_zone": "distribution"
+      },
+      "quality_indicators": {
+        "data_quality_score": 0.98,
+        "sensor_health": "healthy",
+        "calibration_date": "2024-01-15",
+        "accuracy_class": "0.2",
+        "communication_status": "good",
+        "missing_values": {
+          "voltage_missing": 0,
+          "current_missing": 0,
+          "power_missing": 0
+        }
+      },
+      "operational_context": {
+        "system_state": "normal",
+        "load_level": "normal",
+        "weather_conditions": "clear",
+        "switching_operations": false,
+        "protection_status": "normal"
+      },
+      "security_metadata": {
+        "data_classification": "confidential",
+        "nerc_cip_level": "medium",
+        "encryption_status": "encrypted",
+        "audit_trail_id": "AUD-2024080814300001"
+      }
+    }
+  ]
+}
