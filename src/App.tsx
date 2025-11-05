@@ -52,26 +52,25 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/architecture" element={<AuthGuard><Architecture /></AuthGuard>} />
-              <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
-              <Route path="/documentation" element={<AuthGuard><Documentation /></AuthGuard>} />
-              <Route path="/deliverables" element={<AuthGuard><Deliverables /></AuthGuard>} />
-              <Route path="/compliance" element={<AuthGuard><Compliance /></AuthGuard>} />
-              <Route path="/live-monitoring" element={<AuthGuard><LiveMonitoring /></AuthGuard>} />
-              <Route path="/aws-infrastructure" element={<AuthGuard><AWSInfrastructure /></AuthGuard>} />
-              <Route path="/disaster-recovery" element={<AuthGuard><DisasterRecoveryPage /></AuthGuard>} />
-              <Route path="/phase3-advanced" element={<AuthGuard><Phase3Advanced /></AuthGuard>} />
-              <Route path="/phase4-enterprise" element={<AuthGuard><Phase4Enterprise /></AuthGuard>} />
-              <Route path="/sagemaker" element={<AuthGuard><SageMakerDashboardPage /></AuthGuard>} />
-              <Route path="/performance-metrics" element={<AuthGuard><PerformanceMetricsPage /></AuthGuard>} />
-              <Route path="/arcgis" element={<AuthGuard><ArcGISPage /></AuthGuard>} />
-              <Route path="/arcfm" element={<AuthGuard><ArcFMPage /></AuthGuard>} />
-              <Route path="/scada-control" element={<AuthGuard><SCADAControlPage /></AuthGuard>} />
-              <Route path="/outage-management" element={<AuthGuard><OutageManagementPage /></AuthGuard>} />
-              <Route path="/load-testing" element={<AuthGuard><LoadTestingPage /></AuthGuard>} />
-              <Route path="/dr-latency" element={<AuthGuard><DRLatencyMetricsPage /></AuthGuard>} />
-              <Route path="/hybrid-architecture" element={<AuthGuard><HybridArchitecturePage /></AuthGuard>} />
+              <Route path="/architecture" element={<Architecture />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/deliverables" element={<Deliverables />} />
+              <Route path="/compliance" element={<Compliance />} />
+              <Route path="/live-monitoring" element={<LiveMonitoring />} />
+              <Route path="/aws-infrastructure" element={<AWSInfrastructure />} />
+              <Route path="/disaster-recovery" element={<DisasterRecoveryPage />} />
+              <Route path="/phase3-advanced" element={<Phase3Advanced />} />
+              <Route path="/phase4-enterprise" element={<Phase4Enterprise />} />
+              <Route path="/sagemaker" element={<SageMakerDashboardPage />} />
+              <Route path="/performance-metrics" element={<PerformanceMetricsPage />} />
+              <Route path="/arcgis" element={<ArcGISPage />} />
+              <Route path="/arcfm" element={<ArcFMPage />} />
+              <Route path="/scada-control" element={<SCADAControlPage />} />
+              <Route path="/outage-management" element={<OutageManagementPage />} />
+              <Route path="/load-testing" element={<LoadTestingPage />} />
+              <Route path="/dr-latency" element={<DRLatencyMetricsPage />} />
+              <Route path="/hybrid-architecture" element={<HybridArchitecturePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
