@@ -18,6 +18,13 @@ import Phase4Enterprise from "./pages/Phase4Enterprise";
 import SageMakerDashboardPage from "./pages/SageMakerDashboard";
 import PerformanceMetricsPage from "./pages/PerformanceMetrics";
 import DisasterRecoveryPage from "./pages/DisasterRecovery";
+import ArcGISPage from "./pages/ArcGIS";
+import ArcFMPage from "./pages/ArcFM";
+import SCADAControlPage from "./pages/SCADAControl";
+import OutageManagementPage from "./pages/OutageManagement";
+import LoadTestingPage from "./pages/LoadTesting";
+import DRLatencyMetricsPage from "./pages/DRLatencyMetrics";
+import HybridArchitecturePage from "./pages/HybridArchitecture";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -58,6 +65,13 @@ const App = () => (
               <Route path="/phase4-enterprise" element={<AuthGuard><Phase4Enterprise /></AuthGuard>} />
               <Route path="/sagemaker" element={<AuthGuard><SageMakerDashboardPage /></AuthGuard>} />
               <Route path="/performance-metrics" element={<AuthGuard><PerformanceMetricsPage /></AuthGuard>} />
+              <Route path="/arcgis" element={<AuthGuard><ArcGISPage /></AuthGuard>} />
+              <Route path="/arcfm" element={<AuthGuard><ArcFMPage /></AuthGuard>} />
+              <Route path="/scada-control" element={<AuthGuard><SCADAControlPage /></AuthGuard>} />
+              <Route path="/outage-management" element={<AuthGuard><OutageManagementPage /></AuthGuard>} />
+              <Route path="/load-testing" element={<AuthGuard><LoadTestingPage /></AuthGuard>} />
+              <Route path="/dr-latency" element={<AuthGuard><DRLatencyMetricsPage /></AuthGuard>} />
+              <Route path="/hybrid-architecture" element={<AuthGuard><HybridArchitecturePage /></AuthGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
