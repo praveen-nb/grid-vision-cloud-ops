@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -232,7 +232,7 @@ export type Database = {
           created_at: string
           duration_ms: number | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           outcome: string
           resource_id: string | null
           resource_type: string
@@ -246,7 +246,7 @@ export type Database = {
           created_at?: string
           duration_ms?: number | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           outcome: string
           resource_id?: string | null
           resource_type: string
@@ -260,7 +260,7 @@ export type Database = {
           created_at?: string
           duration_ms?: number | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           outcome?: string
           resource_id?: string | null
           resource_type?: string
@@ -1230,10 +1230,17 @@ export type Database = {
       }
       multi_tenant_organizations: {
         Row: {
+          alert_thresholds: Json | null
+          api_keys: Json | null
           billing_info: Json
+          branding_config: Json | null
           created_at: string
+          custom_workflows: Json | null
+          data_retention_days: number | null
+          domain: string | null
           features_enabled: Json
           id: string
+          integration_config: Json | null
           max_connections: number
           max_users: number
           organization_code: string
@@ -1241,13 +1248,21 @@ export type Database = {
           settings: Json
           status: string
           subscription_tier: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
+          alert_thresholds?: Json | null
+          api_keys?: Json | null
           billing_info?: Json
+          branding_config?: Json | null
           created_at?: string
+          custom_workflows?: Json | null
+          data_retention_days?: number | null
+          domain?: string | null
           features_enabled?: Json
           id?: string
+          integration_config?: Json | null
           max_connections?: number
           max_users?: number
           organization_code: string
@@ -1255,13 +1270,21 @@ export type Database = {
           settings?: Json
           status?: string
           subscription_tier?: string
+          tenant_id: string
           updated_at?: string
         }
         Update: {
+          alert_thresholds?: Json | null
+          api_keys?: Json | null
           billing_info?: Json
+          branding_config?: Json | null
           created_at?: string
+          custom_workflows?: Json | null
+          data_retention_days?: number | null
+          domain?: string | null
           features_enabled?: Json
           id?: string
+          integration_config?: Json | null
           max_connections?: number
           max_users?: number
           organization_code?: string
@@ -1269,6 +1292,7 @@ export type Database = {
           settings?: Json
           status?: string
           subscription_tier?: string
+          tenant_id?: string
           updated_at?: string
         }
         Relationships: []
@@ -1578,7 +1602,7 @@ export type Database = {
           id: string
           response_actions: Json | null
           severity: string | null
-          source_ip: unknown | null
+          source_ip: unknown
           status: string | null
           target_system: string | null
           updated_at: string
@@ -1591,7 +1615,7 @@ export type Database = {
           id?: string
           response_actions?: Json | null
           severity?: string | null
-          source_ip?: unknown | null
+          source_ip?: unknown
           status?: string | null
           target_system?: string | null
           updated_at?: string
@@ -1604,7 +1628,7 @@ export type Database = {
           id?: string
           response_actions?: Json | null
           severity?: string | null
-          source_ip?: unknown | null
+          source_ip?: unknown
           status?: string | null
           target_system?: string | null
           updated_at?: string
@@ -1616,6 +1640,496 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "grid_connections"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_circuits: {
+        Row: {
+          capacity_amps: number | null
+          circuit_id: string
+          circuit_type: string
+          conductor_type: string | null
+          created_at: string | null
+          id: string
+          length_miles: number | null
+          load_current_amps: number | null
+          name: string
+          protection_scheme: Json | null
+          status: string | null
+          substation_id: string | null
+          tenant_id: string
+          topology: Json | null
+          updated_at: string | null
+          voltage_level: number
+        }
+        Insert: {
+          capacity_amps?: number | null
+          circuit_id: string
+          circuit_type: string
+          conductor_type?: string | null
+          created_at?: string | null
+          id?: string
+          length_miles?: number | null
+          load_current_amps?: number | null
+          name: string
+          protection_scheme?: Json | null
+          status?: string | null
+          substation_id?: string | null
+          tenant_id: string
+          topology?: Json | null
+          updated_at?: string | null
+          voltage_level: number
+        }
+        Update: {
+          capacity_amps?: number | null
+          circuit_id?: string
+          circuit_type?: string
+          conductor_type?: string | null
+          created_at?: string | null
+          id?: string
+          length_miles?: number | null
+          load_current_amps?: number | null
+          name?: string
+          protection_scheme?: Json | null
+          status?: string | null
+          substation_id?: string | null
+          tenant_id?: string
+          topology?: Json | null
+          updated_at?: string | null
+          voltage_level?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_circuits_substation_id_fkey"
+            columns: ["substation_id"]
+            isOneToOne: false
+            referencedRelation: "tenant_substations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_circuits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_configurations: {
+        Row: {
+          alert_rules: Json | null
+          created_at: string | null
+          custom_metrics: Json | null
+          dashboard_layout: Json | null
+          data_refresh_interval: number | null
+          enabled_features: Json | null
+          id: string
+          integration_endpoints: Json | null
+          map_default_view: Json | null
+          notification_settings: Json | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          alert_rules?: Json | null
+          created_at?: string | null
+          custom_metrics?: Json | null
+          dashboard_layout?: Json | null
+          data_refresh_interval?: number | null
+          enabled_features?: Json | null
+          id?: string
+          integration_endpoints?: Json | null
+          map_default_view?: Json | null
+          notification_settings?: Json | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          alert_rules?: Json | null
+          created_at?: string | null
+          custom_metrics?: Json | null
+          dashboard_layout?: Json | null
+          data_refresh_interval?: number | null
+          enabled_features?: Json | null
+          id?: string
+          integration_endpoints?: Json | null
+          map_default_view?: Json | null
+          notification_settings?: Json | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_configurations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_data_ingestion_logs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          data_type: string
+          error_details: Json | null
+          id: string
+          records_failed: number | null
+          records_processed: number | null
+          source_system: string
+          started_at: string | null
+          status: string | null
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          data_type: string
+          error_details?: Json | null
+          id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          source_system: string
+          started_at?: string | null
+          status?: string | null
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          data_type?: string
+          error_details?: Json | null
+          id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          source_system?: string
+          started_at?: string | null
+          status?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_data_ingestion_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_grid_assets: {
+        Row: {
+          asset_id: string
+          asset_name: string
+          asset_type: string
+          capacity_rating: number | null
+          created_at: string | null
+          geometry: Json | null
+          health_score: number | null
+          id: string
+          installation_date: string | null
+          last_maintenance: string | null
+          location: Json
+          next_maintenance: string | null
+          operational_status: string | null
+          parent_asset_id: string | null
+          properties: Json | null
+          risk_level: string | null
+          scada_tag: string | null
+          tenant_id: string
+          updated_at: string | null
+          voltage_level: number | null
+        }
+        Insert: {
+          asset_id: string
+          asset_name: string
+          asset_type: string
+          capacity_rating?: number | null
+          created_at?: string | null
+          geometry?: Json | null
+          health_score?: number | null
+          id?: string
+          installation_date?: string | null
+          last_maintenance?: string | null
+          location: Json
+          next_maintenance?: string | null
+          operational_status?: string | null
+          parent_asset_id?: string | null
+          properties?: Json | null
+          risk_level?: string | null
+          scada_tag?: string | null
+          tenant_id: string
+          updated_at?: string | null
+          voltage_level?: number | null
+        }
+        Update: {
+          asset_id?: string
+          asset_name?: string
+          asset_type?: string
+          capacity_rating?: number | null
+          created_at?: string | null
+          geometry?: Json | null
+          health_score?: number | null
+          id?: string
+          installation_date?: string | null
+          last_maintenance?: string | null
+          location?: Json
+          next_maintenance?: string | null
+          operational_status?: string | null
+          parent_asset_id?: string | null
+          properties?: Json | null
+          risk_level?: string | null
+          scada_tag?: string | null
+          tenant_id?: string
+          updated_at?: string | null
+          voltage_level?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_grid_assets_parent_asset_id_fkey"
+            columns: ["parent_asset_id"]
+            isOneToOne: false
+            referencedRelation: "tenant_grid_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_grid_assets_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_outages: {
+        Row: {
+          acknowledged_at: string | null
+          actual_restoration: string | null
+          affected_area: Json
+          affected_assets: Json | null
+          affected_customers: number | null
+          cause: string | null
+          created_at: string | null
+          crew_assigned: Json | null
+          customer_communications: Json | null
+          estimated_restoration: string | null
+          id: string
+          outage_id: string
+          outage_type: string
+          reported_at: string | null
+          restoration_priority: number | null
+          severity: string
+          status: string | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          actual_restoration?: string | null
+          affected_area: Json
+          affected_assets?: Json | null
+          affected_customers?: number | null
+          cause?: string | null
+          created_at?: string | null
+          crew_assigned?: Json | null
+          customer_communications?: Json | null
+          estimated_restoration?: string | null
+          id?: string
+          outage_id: string
+          outage_type: string
+          reported_at?: string | null
+          restoration_priority?: number | null
+          severity: string
+          status?: string | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          actual_restoration?: string | null
+          affected_area?: Json
+          affected_assets?: Json | null
+          affected_customers?: number | null
+          cause?: string | null
+          created_at?: string | null
+          crew_assigned?: Json | null
+          customer_communications?: Json | null
+          estimated_restoration?: string | null
+          id?: string
+          outage_id?: string
+          outage_type?: string
+          reported_at?: string | null
+          restoration_priority?: number | null
+          severity?: string
+          status?: string | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_outages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_scada_data: {
+        Row: {
+          alarm_state: string | null
+          asset_id: string | null
+          created_at: string | null
+          data_type: string
+          id: string
+          quality: string | null
+          tag_name: string
+          tenant_id: string
+          timestamp: string | null
+          unit: string | null
+          value: number
+        }
+        Insert: {
+          alarm_state?: string | null
+          asset_id?: string | null
+          created_at?: string | null
+          data_type: string
+          id?: string
+          quality?: string | null
+          tag_name: string
+          tenant_id: string
+          timestamp?: string | null
+          unit?: string | null
+          value: number
+        }
+        Update: {
+          alarm_state?: string | null
+          asset_id?: string | null
+          created_at?: string | null
+          data_type?: string
+          id?: string
+          quality?: string | null
+          tag_name?: string
+          tenant_id?: string
+          timestamp?: string | null
+          unit?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_scada_data_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "tenant_grid_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_scada_data_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_substations: {
+        Row: {
+          alarm_count: number | null
+          breaker_count: number | null
+          control_mode: string | null
+          created_at: string | null
+          current_load_mva: number | null
+          id: string
+          location: Json
+          name: string
+          operational_status: string | null
+          scada_system: string | null
+          substation_id: string
+          tenant_id: string
+          total_capacity_mva: number | null
+          transformer_count: number | null
+          updated_at: string | null
+          voltage_levels: Json
+        }
+        Insert: {
+          alarm_count?: number | null
+          breaker_count?: number | null
+          control_mode?: string | null
+          created_at?: string | null
+          current_load_mva?: number | null
+          id?: string
+          location: Json
+          name: string
+          operational_status?: string | null
+          scada_system?: string | null
+          substation_id: string
+          tenant_id: string
+          total_capacity_mva?: number | null
+          transformer_count?: number | null
+          updated_at?: string | null
+          voltage_levels: Json
+        }
+        Update: {
+          alarm_count?: number | null
+          breaker_count?: number | null
+          control_mode?: string | null
+          created_at?: string | null
+          current_load_mva?: number | null
+          id?: string
+          location?: Json
+          name?: string
+          operational_status?: string | null
+          scada_system?: string | null
+          substation_id?: string
+          tenant_id?: string
+          total_capacity_mva?: number | null
+          transformer_count?: number | null
+          updated_at?: string | null
+          voltage_levels?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_substations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      tenant_user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          permissions: Json | null
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          permissions?: Json | null
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          permissions?: Json | null
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_user_roles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "multi_tenant_organizations"
+            referencedColumns: ["tenant_id"]
           },
         ]
       }
@@ -1645,11 +2159,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_tenants: {
+        Args: { user_uuid: string }
+        Returns: {
+          role: string
+          tenant_id: string
+        }[]
+      }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
+        Returns: boolean
+      }
+      user_has_tenant_access: {
+        Args: { check_tenant_id: string; user_uuid: string }
+        Returns: boolean
+      }
+      user_has_tenant_role: {
+        Args: { check_role: string; check_tenant_id: string; user_uuid: string }
         Returns: boolean
       }
     }
@@ -1660,6 +2189,13 @@ export type Database = {
         | "field_technician"
         | "analyst"
         | "compliance_officer"
+      tenant_role:
+        | "super_admin"
+        | "tenant_admin"
+        | "grid_operator"
+        | "field_technician"
+        | "analyst"
+        | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1793,6 +2329,14 @@ export const Constants = {
         "field_technician",
         "analyst",
         "compliance_officer",
+      ],
+      tenant_role: [
+        "super_admin",
+        "tenant_admin",
+        "grid_operator",
+        "field_technician",
+        "analyst",
+        "viewer",
       ],
     },
   },
